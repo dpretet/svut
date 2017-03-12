@@ -1,18 +1,3 @@
-# Copyright 2017 Damien Pretet ThotIP
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -30,10 +15,26 @@ Options:
   -h --help     Show this screen.
   --version     Show version.
 
-
 """
 
 from docopt import docopt
+import os, sys
+
+"""
+Copyright 2017 Damien Pretet ThotIP
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 
 if __name__ == '__main__':
 
@@ -42,14 +43,17 @@ if __name__ == '__main__':
     if arguments["--verbose"]:
         print(arguments)
 
-    verilog = open(arguments["<name>"], "r")
-
+    if os.path.isfile(arguments["<name>"]):
+        verilog = open(arguments["<name>"], "r")
+    else:
+        print "ERROR: Can't find file %s to load..." % arguments["<name>"]
+        sys.exit(1)
+        
     moduleFound = "No"
     parameterFound = "No"
     ioFound = "No"
     done = "No"
 
-    io = []
     instance = {"name" : None, "io" : [], "parameter" : []}
 
     for line in verilog:
@@ -103,12 +107,12 @@ if __name__ == '__main__':
     utfile = open(instance["name"]+"_unit_test.sv", "w")
 
     utfile.write("""`timescale 1 ns / 1 ps\n""")
-    utfile.write("`include \"unit_test_h.sv\"\n")
+    utfile.write("`include \"svut_h.sv\"\n")
     utfile.write("""`include \"""" + arguments["<name>"]  + """\"\n""")
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")
     utfile.write("""\n""")
-    utfile.write("""    string name = \"%s\";\n""" % instance["name"]+"_unit_test")
+    utfile.write("""    string name = \"%s\";\n""" % (instance["name"]+"_unit_test"))
     utfile.write("""\n""")
     
     # Print parameter declarationif present
