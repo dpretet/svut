@@ -180,4 +180,7 @@ if __name__ == '__main__':
     utfile.write("""endmodule\n""")
     utfile.write("""\n""")
     utfile.close()
+    
+    curdir  = os.path.dirname(os.path.abspath(__file__)
+    os.system("cp %s ." % (curdir+"/svut_h.sh"))
 
