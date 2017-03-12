@@ -16,7 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import os
 import sys
 import argparse
 
@@ -27,7 +27,19 @@ import argparse
 * support verilator
 """
 
-def create_iverilog(args):
+def find_unit_tests():
+	"""
+	Parse all unit test files of the current folder
+	"""
+	files = []
+	for _file in os.listdir(os.getcwd()):
+		if os.path.isfile(_file):
+			if "unit_test.sv" in _file or "unit_test.v" in _file:
+				files.append(_file)
+	return files
+
+
+def create_iverilog(args, test):
 	"""
 	Create the Icarus Verilog command to launch the simulation
 	"""
@@ -41,16 +53,28 @@ def create_iverilog(args):
 		incs = " ".join(args.include)
 		cmd += "-I " + incs + " "
 
-	if args.test[0][-2:] == ".v":
-		testname = args.test[0][:-2] + ".vvp"
-	elif args.test[0][-3:] == ".sv":
-		testname = args.test[0][:-3] + ".vvp"
+	cmd += test + " "
+	
+	# Check the extension and extract test name
+	if test[-2:] == ".v":
+		_test : test[:-2]
+	elif test[-3:] == ".sv":
+		_test : test[:-3]
 	else:
 		print "ERROR: the test doesn't seem to be a verilog/SystermVerilog file"
-
-	cmd += args.test[0] + " -o " + testname + "; "
-	cmd += "vvp " + testname
+		sys.exit(1)
+	
+	cmd += "-o " + _test + ".vvp; "
+	cmd += "vvp " + _test + ".vvp; "
 	print cmd
+
+
+def create_verilator(args):
+	"""
+	Create the Verilator command to launch the simulation
+	"""
+
+	cmd = ""
 
 def create_questasim(args):
 	"""
@@ -79,12 +103,17 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	## Lower the simulator name to ease process
-	args.simulator = args.simulator.lower()
-	
-	if "iverilog" in args.simulator or "icarus" in args.simulator:
-		create_iverilog(args)
+	if isinstance(args.test, basestring):
+		if "all" in args.test.lower():
+			args.test = find_unit_tests()
 
-	elif "modelsim" in args.simulator or "questa" in args.simulator:
-		create_questasim(args)
+	for tests in args.test:
+		## Lower the simulator name to ease process
+		args.simulator = args.simulator.lower()
+
+		if "iverilog" in args.simulator or "icarus" in args.simulator:
+			create_iverilog(args, tests)
+
+		elif "modelsim" in args.simulator or "questa" in args.simulator:
+			create_questasim(args, tests)
 
