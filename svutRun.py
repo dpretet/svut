@@ -16,15 +16,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
 import os
 import sys
 import argparse
 
 """
-* find all files
-* build the command for icarus
-* write the macros
+TODO:
 * support verilator
+* support questasim
 """
 
 def find_unit_tests():
@@ -33,9 +33,9 @@ def find_unit_tests():
 	"""
 	files = []
 	for _file in os.listdir(os.getcwd()):
-		if os.path.isfile(_file):
-			if "unit_test.sv" in _file or "unit_test.v" in _file:
-				files.append(_file)
+	    if os.path.isfile(_file):
+		if "unit_test.sv" in _file or "unit_test.v" in _file:
+		    files.append(_file)
 	return files
 
 

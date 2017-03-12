@@ -17,8 +17,7 @@ Options:
 
 """
 
-from docopt import docopt
-import os, sys
+import os, sys, argparse
 
 """
 Copyright 2017 Damien Pretet ThotIP
@@ -38,15 +37,21 @@ limitations under the License.
 
 if __name__ == '__main__':
 
-    arguments = docopt(__doc__, version='ThotIP Unit Test generator v1.0')
+    parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
+    
+    parser.add_argument('--verbose', dest='verbose', type=str, default=0,
+    					help='Activate verbose mode')
+    
+    parser.add_argument('--name', dest='name', type=str, default=None, nargs="*",
+    					help="The verilog module to load")
+    
+    args = parser.parse_args()
 
-    if arguments["--verbose"]:
-        print(arguments)
-
-    if os.path.isfile(arguments["<name>"]):
-        verilog = open(arguments["<name>"], "r")
+    args.name = args.name[0]
+    if os.path.isfile(args.name):
+        verilog = open(args.name, "r")
     else:
-        print "ERROR: Can't find file %s to load..." % arguments["<name>"]
+        print "ERROR: Can't find file %s to load..." % args.name
         sys.exit(1)
         
     moduleFound = "No"
@@ -97,18 +102,18 @@ if __name__ == '__main__':
             #parameterFound = "Yes"
             #ioFound = "Yes"
 
-    if arguments["--verbose"]:
+    if args.verbose:
         print "INFO: information extracted:"
         print instance
 
 
-    utname = arguments["<name>"] + "_unit_test"
+    utname = args.name + "_unit_test"
 
     utfile = open(instance["name"]+"_unit_test.sv", "w")
 
     utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("`include \"svut_h.sv\"\n")
-    utfile.write("""`include \"""" + arguments["<name>"]  + """\"\n""")
+    utfile.write("""`include \"""" + args.name  + """\"\n""")
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")
     utfile.write("""\n""")
@@ -181,6 +186,6 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.close()
     
-    curdir  = os.path.dirname(os.path.abspath(__file__)
-    os.system("cp %s ." % (curdir+"/svut_h.sh"))
+    curdir  = os.path.dirname(os.path.abspath(__file__))
+    os.system("cp %s ." % (curdir+"/svut_h.sv"))
 
