@@ -15,17 +15,17 @@
 
 `ifndef INFO
 `define INFO(msg) \
-    $display("INFO:    [%0t][%0s]: %s", $time, name, msg);
+    $display("INFO:    [%0t]: %s", $time, msg);
 `endif
 
 `ifndef WARNING
 `define WARNING(msg) \
-    $display("WARNING: [%0t][%0s]: %s", $time, name, msg);
+    $display("WARNING: [%0t]: %s", $time, msg);
 `endif
 
 `ifndef ERROR
 `define ERROR(msg) \
-    $display("ERROR:   [%0t][%0s]: %s", $time, name, msg);
+    $display("ERROR:   [%0t]: %s", $time, msg);
 `endif
 
 `define UNIT_TESTS \
