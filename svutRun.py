@@ -28,92 +28,96 @@ TODO:
 """
 
 def find_unit_tests():
-	"""
-	Parse all unit test files of the current folder
-	"""
-	files = []
-	for _file in os.listdir(os.getcwd()):
-	    if os.path.isfile(_file):
-		if "unit_test.sv" in _file or "unit_test.v" in _file:
-		    files.append(_file)
-	return files
+    """
+    Parse all unit test files of the current folder
+    """
+    files = []
+    for _file in os.listdir(os.getcwd()):
+        if os.path.isfile(_file):
+    	    if "unit_test.sv" in _file or "unit_test.v" in _file:
+    	        files.append(_file)
+    return files
 
 
 def create_iverilog(args, test):
-	"""
-	Create the Icarus Verilog command to launch the simulation
-	"""
-	cmd = "iverilog "
+    """
+    Create the Icarus Verilog command to launch the simulation
+    """
+    cmd = "iverilog "
+    
+    if args.dotfile:
+        dotfiles = " ".join(args.dotfile)
+        cmd += "-f " + dotfiles + " "
+    
+    if args.include:
+        incs = " ".join(args.include)
+        cmd += "-I " + incs + " "
+    
+    cmd += test + " "
+    
+    # Check the extension and extract test name
+    if test[-2:] == ".v":
+        _test = test[:-2]
+    elif test[-3:] == ".sv":
+        _test = test[:-3]
+    else:
+        print "ERROR: the test doesn't seem to be a verilog/SystermVerilog file"
+        sys.exit(1)
+    
+    cmd += "-o " + _test + ".vvp; "
+    cmd += "vvp " + _test + ".vvp; "
 
-	if args.dotfile:
-		dotfiles = " ".join(args.dotfile)
-		cmd += "-f " + dotfiles + " "
-
-	if args.include:
-		incs = " ".join(args.include)
-		cmd += "-I " + incs + " "
-
-	cmd += test + " "
-	
-	# Check the extension and extract test name
-	if test[-2:] == ".v":
-		_test : test[:-2]
-	elif test[-3:] == ".sv":
-		_test : test[:-3]
-	else:
-		print "ERROR: the test doesn't seem to be a verilog/SystermVerilog file"
-		sys.exit(1)
-	
-	cmd += "-o " + _test + ".vvp; "
-	cmd += "vvp " + _test + ".vvp; "
-	print cmd
+    return cmd
 
 
 def create_verilator(args):
-	"""
-	Create the Verilator command to launch the simulation
-	"""
+    """
+    Create the Verilator command to launch the simulation
+    """
 
-	cmd = ""
+    cmd = ""
+    return cmd
 
 def create_questasim(args):
-	"""
-	Create the Questasim command to launch the simulation
-	"""
+    """
+    Create the Questasim command to launch the simulation
+    """
 
-	cmd = "vlib work; "
+    cmd = "vlib work; "
+    return cmd
 
 
 if __name__ == '__main__':
+    
+    parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
 
-	parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
-
-	parser.add_argument('--test', dest='test', type=str, default="all", nargs="*",
-						help='Unit test to run. Can be a file or a list of files')
-
-	parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
-						help="A dot file (file.f) to load with incdir, define and fileset")
-
-	parser.add_argument('--sim', dest='simulator', type=str,
-						default="icarus",
-						help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
-
-	parser.add_argument('-I', dest='include', type=str, nargs="*",
-						default="", help='An include folder')
-
-	args = parser.parse_args()
-
-	if isinstance(args.test, basestring):
-		if "all" in args.test.lower():
-			args.test = find_unit_tests()
-
-	for tests in args.test:
-		## Lower the simulator name to ease process
-		args.simulator = args.simulator.lower()
-
-		if "iverilog" in args.simulator or "icarus" in args.simulator:
-			create_iverilog(args, tests)
-
-		elif "modelsim" in args.simulator or "questa" in args.simulator:
-			create_questasim(args, tests)
-
+    parser.add_argument('--test', dest='test', type=str, default="all", nargs="*",
+    					help='Unit test to run. Can be a file or a list of files')
+    
+    parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
+    					help="A dot file (file.f) to load with incdir, define and fileset")
+    
+    parser.add_argument('--sim', dest='simulator', type=str,
+    					default="icarus",
+    					help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
+    
+    parser.add_argument('-I', dest='include', type=str, nargs="*",
+    					default="", help='An include folder')
+    
+    args = parser.parse_args()
+    
+    if isinstance(args.test, basestring):
+    	if "all" in args.test.lower():
+            args.test = find_unit_tests()
+    
+    for tests in args.test:
+    	## Lower the simulator name to ease process
+    	args.simulator = args.simulator.lower()
+    
+    	if "iverilog" in args.simulator or "icarus" in args.simulator:
+            cmd = create_iverilog(args, tests)
+    
+    	elif "modelsim" in args.simulator or "questa" in args.simulator:
+            cmd = create_questasim(args, tests)
+        
+        os.system(cmd) 

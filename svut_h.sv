@@ -13,59 +13,49 @@
 // limitations under the License.
 
 
-`ifndef UNIT_TESTS
+`ifndef INFO
+`define INFO(msg) \
+    $display("INFO:    [%0t][%0s]: %s", $time, name, msg);
+`endif
+
+`ifndef WARNING
+`define WARNING(msg) \
+    $display("WARNING: [%0t][%0s]: %s", $time, name, msg);
+`endif
+
+`ifndef ERROR
+`define ERROR(msg) \
+    $display("ERROR:   [%0t][%0s]: %s", $time, name, msg);
+`endif
+
 `define UNIT_TESTS \
-    reg test_error = 0;\
-    reg error = 0;\
-`endif
+    task automatic run();
 
-`ifndef UNIT_TEST
-`define UNIT_TEST \
-    error = 0;\
-`endif
+`define UNIT_TEST(_TESTNAME_) \
+    begin: _TESTNAME_ \
+        setup();
 
-`ifndef UNIT_TEST_END
 `define UNIT_TEST_END \
-    if (error > 0)
-        `ERROR("Error(s) happened during test run")
-`endif
+    teardown(); \
+    end
 
-`ifndef UNIT_TESTS_END
-`define UNIT_TESTS_END \
-    if (test_error > 0)\
-        `ERROR("Test(s) failed during testsuite run")\
-`endif
+`define UNIT_TESTS_END endtask
 
 `ifndef FAIL_IF
 `define FAIL_IF(a) \
-    if (a)\
-        error = 1\
+    if (a) \
+        error = error + 1;
 `endif
 
 `ifndef FAIL_IF_EQUAL
 `define FAIL_IF_EQUAL(a,b) \
-    if (a === b)\
-        error = 1\
+    if (a === b) \
+        error = error + 1;
 `endif
 
 `ifndef FAIL_IF_NOT_EQUAL
 `define FAIL_IF_NOT_EQUAL(a,b) \
-    if (a !== b)\
-        error = 1\
-`endif
-
-`ifndef INFO
-`define INFO(msg)
-    $display("INFO:    [%0t][%0s]: %s", $time, name, msg)
-`endif
-
-`ifndef WARNING
-`define WARNING(msg)
-    $display("WARNING: [%0t][%0s]: %s", $time, name, msg)
-`endif
-
-`ifndef ERROR
-`define ERROR(msg)
-    $display("ERROR:   [%0t][%0s]: %s", $time, name, msg)
+    if (a !== b) \
+        error = error + 1;
 `endif
 
