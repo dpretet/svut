@@ -1,24 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" ThotIP Unit Test generator v1.0
-
-Usage:
-  svutCreate.py <name> [--space] [--verbose]
-  svutCreate.py (-h | --help)
-  svutCreate.py --version
-
-Options:
-  <name>        The file name
-  --space       To specify the space identation. tab or a number
-  --verbose     Print info for debug purpose   
-  -h --help     Show this screen.
-  --version     Show version.
-
-"""
-
-import os, sys, argparse
-
 """
 Copyright 2017 Damien Pretet ThotIP
 
@@ -35,16 +17,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os, sys, argparse
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
-    
+
     parser.add_argument('--verbose', dest='verbose', type=str, default=0,
-    					help='Activate verbose mode')
-    
+                                        help='Activate verbose mode')
+
     parser.add_argument('--name', dest='name', type=str, default=None, nargs="*",
-    					help="The verilog module to load")
-    
+                                        help="The verilog module to load")
+
     args = parser.parse_args()
 
     args.name = args.name[0]
@@ -53,7 +37,7 @@ if __name__ == '__main__':
     else:
         print "ERROR: Can't find file %s to load..." % args.name
         sys.exit(1)
-        
+
     moduleFound = "No"
     parameterFound = "No"
     ioFound = "No"
@@ -117,9 +101,9 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")
     utfile.write("""\n""")
-    #utfile.write("""    string name = \"%s\";\n""" % (instance["name"]+"_unit_test"))
+    utfile.write("""    `SVUT_SETUP\n""")
     utfile.write("""\n""")
-    
+
     # Print parameter declarationif present
     if instance["parameter"]:
         for param in instance["parameter"]:
@@ -131,10 +115,10 @@ if __name__ == '__main__':
         for io in instance["io"]:
             utfile.write("""    """ + io + "\n")
         utfile.write("""\n""")
-    
+
     # Write the instance
     utfile.write("""    """ + instance["name"] + " \n")
-    
+
     # Print parameter instance if present
     if instance["parameter"]:
         utfile.write("""    #(\n""")
@@ -146,11 +130,11 @@ if __name__ == '__main__':
                 utfile.write("\n")
             else:
                 utfile.write(",\n")
-            
+
         utfile.write("    )\n")
-    
+
     utfile.write("""    dut \n    (\n""")
-    
+
     # Print input/output instance if present
     if instance["io"]:
         for ix, io in enumerate(instance["io"]):
@@ -160,7 +144,7 @@ if __name__ == '__main__':
                 utfile.write("\n")
             else:
                 utfile.write(",\n")
-    
+
     utfile.write("""    );\n""")
 
     utfile.write("""\n""")
@@ -180,7 +164,7 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TESTS\n""")
     utfile.write("""\n""")
-    utfile.write("""    `UNIT_TEST(testName)\n""")
+    utfile.write("""    `UNIT_TEST(TESTNAME)\n""")
     utfile.write("""        // Describe here your testcase\n""")
     utfile.write("""    `UNIT_TEST_END\n""")
     utfile.write("""\n""")
@@ -189,7 +173,7 @@ if __name__ == '__main__':
     utfile.write("""endmodule\n""")
     utfile.write("""\n""")
     utfile.close()
-    
+
     curdir  = os.path.dirname(os.path.abspath(__file__))
     os.system("cp %s ." % (curdir+"/svut_h.sv"))
 

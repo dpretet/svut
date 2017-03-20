@@ -15,47 +15,85 @@
 
 `ifndef INFO
 `define INFO(msg) \
-    $display("INFO:    [%0t]: %s", $time, msg);
+    $display("INFO:    [%0t]: %s", $time, msg)
 `endif
 
 `ifndef WARNING
 `define WARNING(msg) \
-    $display("WARNING: [%0t]: %s", $time, msg);
+    $display("WARNING: [%0t]: %s", $time, msg)
 `endif
 
 `ifndef ERROR
 `define ERROR(msg) \
-    $display("ERROR:   [%0t]: %s", $time, msg);
+    $display("ERROR:   [%0t]: %s", $time, msg)
 `endif
 
-`define UNIT_TESTS \
-    task automatic run();
+`ifndef SVUT_SETUP
+`define SVUT_SETUP \
+    integer svut_timeout = 0; \
+    integer svut_error = 0;
+`endif
 
-`define UNIT_TEST(_TESTNAME_) \
-    begin: _TESTNAME_ \
-        setup();
+`ifndef SVUT_TIMEOUT
+`define SVUT_TIMEOUT 1000
+`endif
 
-`define UNIT_TEST_END \
-    teardown(); \
-    end
-
-`define UNIT_TESTS_END endtask
+`ifndef SVUT_SET_TIMEOUT
+`define SVUT_SET_TIMEOUT(value) \
+    `SVUT_TIME_OUT=value;
+`endif
 
 `ifndef FAIL_IF
-`define FAIL_IF(a) \
-    if (a) \
-        error = error + 1;
+`define FAIL_IF(exp) \
+    if (exp) \
+        svut_error = svut_error + 1
 `endif
 
 `ifndef FAIL_IF_EQUAL
 `define FAIL_IF_EQUAL(a,b) \
     if (a === b) \
-        error = error + 1;
+        svut_error = svut_error + 1
 `endif
 
 `ifndef FAIL_IF_NOT_EQUAL
 `define FAIL_IF_NOT_EQUAL(a,b) \
     if (a !== b) \
-        error = error + 1;
+        svut_error = svut_error + 1
 `endif
+
+`define UNIT_TESTS \
+    task automatic run(); \
+    begin
+
+`define UNIT_TEST(TESTNAME) \
+        setup(); \
+        svut_error = 0; \
+        svut_timeout = 0; \
+        fork : TESTNAME \
+            begin \
+
+`define UNIT_TEST_END \
+                disable TESTNAME; \
+            end \
+            begin \
+                if (`SVUT_TIMEOUT != 0) begin \
+                    while (svut_timeout < `SVUT_TIMEOUT) begin \
+                        #1; \
+                        svut_timeout = svut_timeout + 1; \
+                    end \
+                    `ERROR("Timeout reached!"); \
+                    $stop(); \
+                end \
+            end \
+        join \
+        #0; \
+        teardown();
+
+`define UNIT_TESTS_END \
+    end \
+    endtask \
+    initial begin\
+        run(); \
+        $finish(); \
+    end
 

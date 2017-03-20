@@ -43,7 +43,7 @@ def create_iverilog(args, test):
     """
     Create the Icarus Verilog command to launch the simulation
     """
-    cmd = "iverilog "
+    cmd = "iverilog -gsystem-verilog "
     
     if args.dotfile:
         dotfiles = " ".join(args.dotfile)
@@ -61,8 +61,7 @@ def create_iverilog(args, test):
     elif test[-3:] == ".sv":
         _test = test[:-3]
     else:
-        print "ERROR: the test doesn't seem to be a verilog/SystermVerilog file"
-        sys.exit(1)
+        return 0
     
     cmd += "-o " + _test + ".vvp; "
     cmd += "vvp " + _test + ".vvp; "
@@ -120,4 +119,5 @@ if __name__ == '__main__':
     	elif "modelsim" in args.simulator or "questa" in args.simulator:
             cmd = create_questasim(args, tests)
         
-        os.system(cmd) 
+        if cmd != 0: 
+            os.system(cmd) 
