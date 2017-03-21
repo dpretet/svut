@@ -21,6 +21,8 @@ import os
 import sys
 import argparse
 
+CURDIR = os.path.abspath(os.path.dirname(__file__))
+
 """
 TODO:
 * support verilator
@@ -32,10 +34,13 @@ def find_unit_tests():
     Parse all unit test files of the current folder
     """
     files = []
+    # Parse the current folder
     for _file in os.listdir(os.getcwd()):
+        # Check only the files
         if os.path.isfile(_file):
-    	    if "unit_test.sv" in _file or "unit_test.v" in _file:
-    	        files.append(_file)
+            # Ensure its at least a verilog file
+            if _file.endswith("unit_test.sv")  or _file.endswith("unit_test.v"):
+                files.append(_file)
     return files
 
 
@@ -44,25 +49,26 @@ def create_iverilog(args, test):
     Create the Icarus Verilog command to launch the simulation
     """
     cmd = "iverilog -gsystem-verilog "
-    
+
     if args.dotfile:
         dotfiles = " ".join(args.dotfile)
         cmd += "-f " + dotfiles + " "
-    
+
     if args.include:
         incs = " ".join(args.include)
         cmd += "-I " + incs + " "
-    
+
     cmd += test + " "
-    
+
     # Check the extension and extract test name
     if test[-2:] == ".v":
         _test = test[:-2]
     elif test[-3:] == ".sv":
         _test = test[:-3]
     else:
-        return 0
-    
+        print ("ERROR: failed to find supported for the unit test. Must a Verilog (.v) or SystemVerilog file (*.sv)")
+        return 1
+
     cmd += "-o " + _test + ".vvp; "
     cmd += "vvp " + _test + ".vvp; "
 
@@ -87,37 +93,48 @@ def create_questasim(args):
 
 
 if __name__ == '__main__':
-    
+
     parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
 
     parser.add_argument('--test', dest='test', type=str, default="all", nargs="*",
-    					help='Unit test to run. Can be a file or a list of files')
-    
+                                        help='Unit test to run. Can be a file or a list of files')
+
     parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
-    					help="A dot file (file.f) to load with incdir, define and fileset")
-    
+                                        help="A dot file (file.f) to load with incdir, define and fileset")
+
     parser.add_argument('--sim', dest='simulator', type=str,
-    					default="icarus",
-    					help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
-    
+                                        default="icarus",
+                                        help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
+
     parser.add_argument('-I', dest='include', type=str, nargs="*",
-    					default="", help='An include folder')
-    
+                                        default="", help='An include folder')
+
     args = parser.parse_args()
-    
+
     if isinstance(args.test, basestring):
-    	if "all" in args.test.lower():
+        if "all" in args.test.lower():
             args.test = find_unit_tests()
-    
+
     for tests in args.test:
-    	## Lower the simulator name to ease process
-    	args.simulator = args.simulator.lower()
-    
-    	if "iverilog" in args.simulator or "icarus" in args.simulator:
+        ## Lower the simulator name to ease process
+        args.simulator = args.simulator.lower()
+
+        if "iverilog" in args.simulator or "icarus" in args.simulator:
             cmd = create_iverilog(args, tests)
-    
-    	elif "modelsim" in args.simulator or "questa" in args.simulator:
+
+        elif "modelsim" in args.simulator or "questa" in args.simulator:
             cmd = create_questasim(args, tests)
-        
-        if cmd != 0: 
-            os.system(cmd) 
+
+        # Execute command on creation success
+        if cmd != 1:
+            # First copy macro in the user folder
+            os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
+            cmdret = os.system(cmd)
+            os.system("rm -f " + os.getcwd() + "/svut_h.sv")
+            if cmdret:
+                print "ERROR: testsuite execution failed"
+            sys.exit(cmdret)
+        else:
+            print ("ERROR: Command creation failed...")
+            sys.exit(1)
+

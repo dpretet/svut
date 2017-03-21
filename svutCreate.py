@@ -148,6 +148,8 @@ if __name__ == '__main__':
     utfile.write("""    );\n""")
 
     utfile.write("""\n""")
+    utfile.write("""    // An example to create a clock\n""")
+    utfile.write("""    // initial aclk = 0;\n""")
     utfile.write("""    // always #2 aclk <= ~aclk;\n""")
     utfile.write("""\n""")
     utfile.write("""    task setup();\n""")
@@ -173,7 +175,4 @@ if __name__ == '__main__':
     utfile.write("""endmodule\n""")
     utfile.write("""\n""")
     utfile.close()
-
-    curdir  = os.path.dirname(os.path.abspath(__file__))
-    os.system("cp %s ." % (curdir+"/svut_h.sv"))
 
