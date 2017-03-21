@@ -15,23 +15,25 @@
 
 `ifndef INFO
 `define INFO(msg) \
-    $display("INFO:    [%0t]: %s", $time, msg)
+    $display("INFO:    [%g]: %s", $time, msg)
 `endif
 
 `ifndef WARNING
 `define WARNING(msg) \
-    $display("WARNING: [%0t]: %s", $time, msg)
+    $display("WARNING: [%g]: %s", $time, msg)
 `endif
 
 `ifndef ERROR
 `define ERROR(msg) \
-    $display("ERROR:   [%0t]: %s", $time, msg)
+    $display("ERROR:   [%g]: %s", $time, msg)
 `endif
 
 `ifndef SVUT_SETUP
 `define SVUT_SETUP \
     integer svut_timeout = 0; \
-    integer svut_error = 0;
+    integer svut_error = 0; \
+    integer svut_nb_test = 0; \
+    integer svut_nb_test_success = 0;
 `endif
 
 `ifndef SVUT_TIMEOUT
@@ -46,6 +48,12 @@
 `ifndef FAIL_IF
 `define FAIL_IF(exp) \
     if (exp) \
+        svut_error = svut_error + 1
+`endif
+
+`ifndef FAIL_IF_NOT
+`define FAIL_IF_NOT(exp) \
+    if (!exp) \
         svut_error = svut_error + 1
 `endif
 
@@ -69,6 +77,7 @@
         setup(); \
         svut_error = 0; \
         svut_timeout = 0; \
+        svut_nb_test = svut_nb_test + 1; \
         fork : TESTNAME \
             begin \
 
@@ -81,19 +90,26 @@
                         #1; \
                         svut_timeout = svut_timeout + 1; \
                     end \
-                    `ERROR("Timeout reached!"); \
-                    $stop(); \
+                    $display("ERROR: Timeout reached @ %g!", $time); \
+                    svut_error = svut_error + 1; \
+                    disable TESTNAME; \
                 end \
             end \
         join \
         #0; \
-        teardown();
+        teardown(); \
+        if (svut_error == 0) \
+            svut_nb_test_success = svut_nb_test_success + 1; \
+        else \
+            $display("ERROR: test fail");
 
 `define UNIT_TESTS_END \
     end \
     endtask \
     initial begin\
         run(); \
+        $display("INFO: Testsuite finished to run @ %g", $time); \
+        $display("INFO: Successful tests: %3d / %3d", svut_nb_test_success, svut_nb_test); \
         $finish(); \
     end
 
