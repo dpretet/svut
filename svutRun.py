@@ -70,7 +70,12 @@ def create_iverilog(args, test):
         return 1
 
     cmd += "-o " + _test + ".vvp; "
-    cmd += "vvp " + _test + ".vvp; "
+    cmd += "vvp " + _test + ".vvp "
+    
+    if args.gui:
+        cmd += "-lxt; gtkwave *.lxt &"
+    else:
+        cmd += "; "
 
     return cmd
 
@@ -96,19 +101,22 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
 
-    parser.add_argument('--test', dest='test', type=str, default="all", nargs="*",
+    parser.add_argument('-test', dest='test', type=str, default="all", nargs="*",
                                         help='Unit test to run. Can be a file or a list of files')
 
     parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
                                         help="A dot file (file.f) to load with incdir, define and fileset")
 
-    parser.add_argument('--sim', dest='simulator', type=str,
+    parser.add_argument('-sim', dest='simulator', type=str,
                                         default="icarus",
                                         help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
+    
+    parser.add_argument('-gui', dest='gui',
+                                action='store_true',
+                                help='Active the lxt dump and open GTKWave when simulation ends')
 
     parser.add_argument('-I', dest='include', type=str, nargs="*",
                                         default="", help='An include folder')
-
     args = parser.parse_args()
 
     if isinstance(args.test, basestring):
@@ -120,7 +128,7 @@ if __name__ == '__main__':
         args.simulator = args.simulator.lower()
 
         if "iverilog" in args.simulator or "icarus" in args.simulator:
-            cmd = create_iverilog(args, tests)
+            cmd = create_iverilog(args, tests, )
 
         elif "modelsim" in args.simulator or "questa" in args.simulator:
             cmd = create_questasim(args, tests)

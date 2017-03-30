@@ -62,7 +62,8 @@ if __name__ == '__main__':
         # Search for the parameter if present
         if parameterFound == "No":
             if line[0:9] == "parameter":
-                _line = line.replace(",", ";")
+                _line = line.replace("\t", " ")
+                _line = _line.replace(",", ";")
                 if _line[-1] != ";":
                     _line = _line + ";"
                 instance["parameter"].append(_line)
@@ -89,7 +90,8 @@ if __name__ == '__main__':
     if args.verbose:
         print "INFO: information extracted:"
         print instance
-
+    
+    print instance["parameter"]
 
     utname = args.name + "_unit_test"
 
@@ -151,6 +153,9 @@ if __name__ == '__main__':
     utfile.write("""    // An example to create a clock\n""")
     utfile.write("""    // initial aclk = 0;\n""")
     utfile.write("""    // always #2 aclk <= ~aclk;\n""")
+    utfile.write("""\n""")
+    utfile.write("""    // An example to dump data for visualization\n""")
+    utfile.write("""    // initial $dumpvars(0,%s);\n""" % (instance["name"] + "_unit_test"))
     utfile.write("""\n""")
     utfile.write("""    task setup();\n""")
     utfile.write("""    begin\n""")
