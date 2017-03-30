@@ -97,9 +97,9 @@ if __name__ == '__main__':
 
     utfile = open(instance["name"]+"_unit_test.sv", "w")
 
-    utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("`include \"svut_h.sv\"\n")
     utfile.write("""`include \"""" + args.name  + """\"\n""")
+    utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")
     utfile.write("""\n""")
