@@ -91,8 +91,6 @@ if __name__ == '__main__':
         print "INFO: information extracted:"
         print instance
     
-    print instance["parameter"]
-
     utname = args.name + "_unit_test"
 
     utfile = open(instance["name"]+"_unit_test.sv", "w")
@@ -170,8 +168,18 @@ if __name__ == '__main__':
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TESTS\n""")
+    utfile.write("""        /* Available macros:\n""")
+    utfile.write("""           - `INFO();\n""")
+    utfile.write("""           - `WARNING();\n""")
+    utfile.write("""           - `ERROR();\n""")
+    utfile.write("""           - `FAIL_IF();\n""")
+    utfile.write("""           - `FAIL_IF_NOT();\n""")
+    utfile.write("""           - `FAIL_IF_EQUAL();\n""")
+    utfile.write("""           - `FAIL_IF_NOT_EQUAL();\n""")
+    utfile.write("""        */\n""")
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TEST(TESTNAME)\n""")
+    utfile.write("""       `INFO(Start test);\n""")
     utfile.write("""        // Describe here your testcase\n""")
     utfile.write("""    `UNIT_TEST_END\n""")
     utfile.write("""\n""")
