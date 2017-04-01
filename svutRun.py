@@ -48,6 +48,7 @@ def create_iverilog(args, test):
     """
     Create the Icarus Verilog command to launch the simulation
     """
+    cmds = []
     cmd = "iverilog -gsystem-verilog "
 
     if args.dotfile:
@@ -73,11 +74,13 @@ def create_iverilog(args, test):
     cmd += "vvp " + _test + ".vvp "
     
     if args.gui:
-        cmd += "-lxt; gtkwave *.lxt &"
+        cmd += "-lxt;"
+        cmds.append(cmd)
+        cmds.append("gtkwave *.lxt&")
     else:
         cmd += "; "
-
-    return cmd
+        cmds.append(cmd)
+    return cmds
 
 
 def create_verilator(args):
@@ -128,19 +131,21 @@ if __name__ == '__main__':
         args.simulator = args.simulator.lower()
 
         if "iverilog" in args.simulator or "icarus" in args.simulator:
-            cmd = create_iverilog(args, tests, )
+            cmds = create_iverilog(args, tests, )
 
         elif "modelsim" in args.simulator or "questa" in args.simulator:
-            cmd = create_questasim(args, tests)
+            cmds = create_questasim(args, tests)
 
         # Execute command on creation success
-        if cmd != 1:
+        if cmds != 1:
             # First copy macro in the user folder
             os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
-            cmdret = os.system(cmd)
+            for cmd in cmds:
+                cmdret = os.system(cmd)
+                if cmdret:
+                    print "ERROR: testsuite execution failed"
+                    break
             os.system("rm -f " + os.getcwd() + "/svut_h.sv")
-            if cmdret:
-                print "ERROR: testsuite execution failed"
             sys.exit(cmdret)
         else:
             print ("ERROR: Command creation failed...")
