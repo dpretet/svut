@@ -29,6 +29,7 @@ TODO:
 * support questasim
 """
 
+
 def find_unit_tests():
     """
     Parse all unit test files of the current folder
@@ -39,7 +40,7 @@ def find_unit_tests():
         # Check only the files
         if os.path.isfile(_file):
             # Ensure its at least a verilog file
-            if _file.endswith("unit_test.sv")  or _file.endswith("unit_test.v"):
+            if _file.endswith("unit_test.sv") or _file.endswith("unit_test.v"):
                 files.append(_file)
     return files
 
@@ -62,15 +63,10 @@ def create_iverilog(args, test):
     cmd += test + " "
 
     # Check the extension and extract test name
-    if test[-2:] == ".v":
-        _test = test[:-2]
-    elif test[-3:] == ".sv":
-        _test = test[:-3]
-    else:
+    if test[-2:] != ".v" and test[-3:] != ".sv":
         print ("ERROR: failed to find supported for the unit test. Must a Verilog (.v) or SystemVerilog file (*.sv)")
         return 1
 
-    #cmd += "-o " + _test + ".vvp; "
     cmds.append(cmd)
     
     cmd = "vvp a.out "
@@ -153,9 +149,7 @@ if __name__ == '__main__':
             for cmd in cmds:
                 if args.dry:
                     cmdret = 0
-                    print(cmd)
                 else:
-                    print cmd
                     cmdret = os.system(cmd)
                 if cmdret:
                     print "ERROR: testsuite execution failed"
