@@ -76,7 +76,10 @@ def create_iverilog(args, test):
     if args.gui:
         cmd += "-lxt;"
         cmds.append(cmd)
-        cmds.append("gtkwave *.lxt&")
+        if os.path.isfile("wave.gtkw"):
+            cmds.append(" gtkwave *.lxt wave.gtkw &")
+        else:
+            cmds.append(" gtkwave *.lxt &")
     else:
         cmd += "; "
         cmds.append(cmd)
@@ -118,6 +121,10 @@ if __name__ == '__main__':
                                 action='store_true',
                                 help='Active the lxt dump and open GTKWave when simulation ends')
 
+    parser.add_argument('-dry-run', dest='dry',
+                                action='store_true',
+                                help='Just print the command, don\'t execute')
+
     parser.add_argument('-I', dest='include', type=str, nargs="*",
                                         default="", help='An include folder')
     args = parser.parse_args()
@@ -141,7 +148,11 @@ if __name__ == '__main__':
             # First copy macro in the user folder
             os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
             for cmd in cmds:
-                cmdret = os.system(cmd)
+                if args.dry:
+                    cmdret = 0
+                    print(cmd)
+                else:
+                    cmdret = os.system(cmd)
                 if cmdret:
                     print "ERROR: testsuite execution failed"
                     break
