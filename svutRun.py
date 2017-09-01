@@ -68,12 +68,12 @@ def create_iverilog(args, test):
         return 1
 
     cmds.append(cmd)
-    
+
     cmd = "vvp a.out "
     if args.gui:
         cmd += "-lxt;"
     cmds.append(cmd)
-    
+
     if args.gui:
         if os.path.isfile("wave.gtkw"):
             cmds.append(" gtkwave *.lxt wave.gtkw &")
@@ -93,6 +93,7 @@ def create_verilator(args):
     cmd = ""
     return cmd
 
+
 def create_questasim(args):
     """
     Create the Questasim command to launch the simulation
@@ -107,25 +108,26 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
 
     parser.add_argument('-test', dest='test', type=str, default="all", nargs="*",
-                                        help='Unit test to run. Can be a file or a list of files')
+                        help='Unit test to run. Can be a file or a list of files')
 
     parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
-                                        help="A dot file (file.f) to load with incdir, define and fileset")
+                        help="A dot file (file.f) to load with incdir, define and fileset")
 
     parser.add_argument('-sim', dest='simulator', type=str,
-                                        default="icarus",
-                                        help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
-    
+                        default="icarus",
+                        help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
+
     parser.add_argument('-gui', dest='gui',
-                                action='store_true',
-                                help='Active the lxt dump and open GTKWave when simulation ends')
+                        action='store_true',
+                        help='Active the lxt dump and open GTKWave when simulation ends')
 
     parser.add_argument('-dry-run', dest='dry',
-                                action='store_true',
-                                help='Just print the command, don\'t execute')
+                        action='store_true',
+                        help='Just print the command, don\'t execute')
 
     parser.add_argument('-I', dest='include', type=str, nargs="*",
-                                        default="", help='An include folder')
+                        default="", help='An include folder')
+
     args = parser.parse_args()
 
     if isinstance(args.test, basestring):
@@ -133,7 +135,7 @@ if __name__ == '__main__':
             args.test = find_unit_tests()
 
     for tests in args.test:
-        ## Lower the simulator name to ease process
+        # Lower the simulator name to ease process
         args.simulator = args.simulator.lower()
 
         if "iverilog" in args.simulator or "icarus" in args.simulator:
@@ -149,6 +151,7 @@ if __name__ == '__main__':
             for cmd in cmds:
                 if args.dry:
                     cmdret = 0
+                    print(cmd)
                 else:
                     cmdret = os.system(cmd)
                 if cmdret:
@@ -159,4 +162,3 @@ if __name__ == '__main__':
         else:
             print ("ERROR: Command creation failed...")
             sys.exit(1)
-
