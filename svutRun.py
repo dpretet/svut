@@ -49,7 +49,7 @@ def create_iverilog(args, test):
     Create the Icarus Verilog command to launch the simulation
     """
     cmds = []
-    cmd = "iverilog -gsystem-verilog "
+    cmd = "iverilog -g2012 "
 
     if args.dotfile:
         dotfiles = " ".join(args.dotfile)
@@ -70,12 +70,15 @@ def create_iverilog(args, test):
         print ("ERROR: failed to find supported for the unit test. Must a Verilog (.v) or SystemVerilog file (*.sv)")
         return 1
 
-    cmd += "-o " + _test + ".vvp; "
-    cmd += "vvp " + _test + ".vvp "
+    #cmd += "-o " + _test + ".vvp; "
+    cmds.append(cmd)
     
+    cmd = "vvp a.out "
     if args.gui:
         cmd += "-lxt;"
-        cmds.append(cmd)
+    cmds.append(cmd)
+    
+    if args.gui:
         if os.path.isfile("wave.gtkw"):
             cmds.append(" gtkwave *.lxt wave.gtkw &")
         else:
@@ -152,6 +155,7 @@ if __name__ == '__main__':
                     cmdret = 0
                     print(cmd)
                 else:
+                    print cmd
                     cmdret = os.system(cmd)
                 if cmdret:
                     print "ERROR: testsuite execution failed"

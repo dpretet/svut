@@ -1,4 +1,4 @@
-// Copyright 2017 Damien Pretet ThotIP
+// Copyright 2017 Damien Pretet ThotLogic
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,16 +30,9 @@
 
 `ifndef SVUT_SETUP
 `define SVUT_SETUP \
-    integer svut_timeout = 0; \
-    integer svut_timeout_max = 100000; \
     integer svut_error = 0; \
     integer svut_nb_test = 0; \
-    integer svut_nb_test_success = 0;
-`endif
-
-`ifndef SVUT_SET_TIMEOUT
-`define SVUT_SET_TIMEOUT(value) \
-    svut_timeout_max = value
+    integer svut_nb_test_success = 0; \
 `endif
 
 `ifndef FAIL_IF
@@ -67,38 +60,23 @@
 `endif
 
 `define UNIT_TESTS \
-    task automatic run(); \
-    begin
+    task run(); \
+    begin \
 
 `define UNIT_TEST(TESTNAME) \
+    begin : TESTNAME \
         setup(); \
         svut_error = 0; \
-        svut_timeout = 0; \
         svut_nb_test = svut_nb_test + 1; \
-        fork : TESTNAME \
-            begin \
 
 `define UNIT_TEST_END \
-                disable TESTNAME; \
-            end \
-            begin \
-                if (svut_timeout_max != 0) begin \
-                    while (svut_timeout < svut_timeout_max) begin \
-                        svut_timeout = svut_timeout + 1; \
-                        #1; \
-                    end \
-                    $display("ERROR: Timeout reached @ %g!", $time); \
-                    svut_error = svut_error + 1; \
-                    disable TESTNAME; \
-                end \
-            end \
-        join \
         #0; \
         teardown(); \
         if (svut_error == 0) \
             svut_nb_test_success = svut_nb_test_success + 1; \
         else \
-            $display("ERROR: test fail");
+            $display("ERROR: test fail"); \
+    end \
 
 `define UNIT_TESTS_END \
     end \
@@ -108,5 +86,5 @@
         $display("INFO: Testsuite finished to run @ %g", $time); \
         $display("INFO: Successful tests: %3d / %3d", svut_nb_test_success, svut_nb_test); \
         $finish(); \
-    end
+    end \
 
