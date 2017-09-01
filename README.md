@@ -4,8 +4,7 @@
 
 svut is a very simple flow to create a Verilog/SystemVerilog unit test.
 It is widely inspired by [SVUnit](http://agilesoc.com/open-source-projects/svunit/), 
-but it's written in python and can run [Icarus Verilog](http://iverilog.icarus.com/) 
-and [Verilator](https://www.veripool.org/wiki/verilator) as simulator.
+but it's written in python and run with [Icarus Verilog](http://iverilog.icarus.com/).
 svut follows KISS principle: [Keep It Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
 
 Hope it can help you!
@@ -49,4 +48,6 @@ svut will scan your current folder, search for the files with "_unit_test.sv" su
 and run all tests available.
 
 Enjoy!
+
+PS: [Verilator](https://www.veripool.org/wiki/verilator) simulator is planned soon, as QuestaSim
 
