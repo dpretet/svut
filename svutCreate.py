@@ -17,23 +17,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os, sys, argparse
+import os
+import sys
+import argparse
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
 
-    parser.add_argument('--verbose', dest='verbose', type=str, default=0,
-                                        help='Activate verbose mode')
+    parser.add_argument('--verbose', dest='verbose', type=str, default=0, help='Activate verbose mode')
 
-    parser.add_argument('--name', dest='name', type=str, default=None, nargs="*",
-                                        help="The verilog module to load")
+    parser.add_argument('--name', dest='name', type=str, default=None, nargs="*", help="The verilog module to load")
 
     args = parser.parse_args()
 
     args.name = args.name[0]
     if os.path.isfile(args.name):
         verilog = open(args.name, "r")
+        print "INFO: Start to generate the template"
     else:
         print "ERROR: Can't find file %s to load..." % args.name
         sys.exit(1)
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     ioFound = "No"
     done = "No"
 
-    instance = {"name" : None, "io" : [], "parameter" : []}
+    instance = {"name": None, "io": [], "parameter": []}
 
     for line in verilog:
 
@@ -84,19 +85,16 @@ if __name__ == '__main__':
                     _line = _line + ";"
                 instance["io"].append(_line.strip())
 
-            #parameterFound = "Yes"
-            #ioFound = "Yes"
-
     if args.verbose:
         print "INFO: information extracted:"
         print instance
-    
+
     utname = args.name + "_unit_test"
 
-    utfile = open(instance["name"]+"_unit_test.sv", "w")
+    utfile = open(instance["name"] + "_unit_test.sv", "w")
 
     utfile.write("`include \"svut_h.sv\"\n")
-    utfile.write("""`include \"""" + args.name  + """\"\n""")
+    utfile.write("""`include \"""" + args.name + """\"\n""")
     utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")
@@ -189,3 +187,14 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.close()
 
+    print ""
+    print "INFO: Unit test template for %s generated in: %s" % (instance["name"], instance["name"] + "_unit_test.sv")
+    print ""
+    print "      To launch SVUT, don't forget to setup its environment variable. For instance:"
+    print ""
+    print "      export SVUT=\"HOME/.svut\""
+    print ""
+    print "      You can find a Makefile example to launch your unit test in your SVUT install folder"
+    print ""
+    print "      cp $SVUT/Makefile.example ./"
+    print ""
