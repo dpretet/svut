@@ -72,10 +72,12 @@
 `define UNIT_TEST_END \
         #0; \
         teardown(); \
-        if (svut_error == 0) \
+        if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-        else \
-            $display("ERROR: test fail"); \
+            `INFO("Test successful"); \
+        end else begin \
+            `ERROR("Test failed"); \
+        end \
     end \
 
 `define UNIT_TESTS_END \
