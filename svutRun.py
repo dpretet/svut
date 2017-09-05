@@ -76,12 +76,10 @@ def create_iverilog(args, test):
 
     if args.gui:
         if os.path.isfile("wave.gtkw"):
-            cmds.append(" gtkwave *.lxt wave.gtkw &")
+            cmds.append("gtkwave *.lxt wave.gtkw &")
         else:
-            cmds.append(" gtkwave *.lxt &")
-    else:
-        cmd += "; "
-        cmds.append(cmd)
+            cmds.append("gtkwave *.lxt &")
+
     return cmds
 
 
