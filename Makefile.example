@@ -1,8 +1,8 @@
 test:
-	@python -u $$SVUT/svutRun.py -f files.f
+	@svutRun.py -f files.f
 
 gui:
-	@python -u $$SVUT/svutRun.py -f files.f -gui
+	@svutRun.py -f files.f -gui
 
 clean:
 	@-rm -f *.vcd
