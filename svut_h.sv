@@ -85,8 +85,12 @@
     endtask \
     initial begin\
         run(); \
-        $display("INFO: Testsuite finished to run @ %g", $time); \
-        $display("INFO: Successful tests: %3d / %3d", svut_nb_test_success, svut_nb_test); \
+        $display("INFO:    Testsuite finished to run @ %g", $time); \
+        if (svut_nb_test_success != svut_nb_test) begin \
+            $display("ERROR:   Result: %3d / %3d", svut_nb_test_success, svut_nb_test); \
+        end else begin \
+            $display("INFO:    Result: %3d / %3d", svut_nb_test_success, svut_nb_test); \
+        end \
         $finish(); \
     end \
 
