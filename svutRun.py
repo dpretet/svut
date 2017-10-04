@@ -129,34 +129,40 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if isinstance(args.test, basestring):
+
         if "all" in args.test.lower():
             args.test = find_unit_tests()
 
     for tests in args.test:
+
         # Lower the simulator name to ease process
         args.simulator = args.simulator.lower()
 
-        if "iverilog" in args.simulator or "icarus" in args.simulator:
+        if "iverilog" in args.simulator.lower() or "icarus" in args.simulator.lower():
             cmds = create_iverilog(args, tests, )
 
-        elif "modelsim" in args.simulator or "questa" in args.simulator:
+        elif "modelsim" in args.simulator.lower() or "questa" in args.simulator.lower():
             cmds = create_questasim(args, tests)
 
         # Execute command on creation success
         if cmds != 1:
+
             # First copy macro in the user folder
             os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
+
             for cmd in cmds:
+
                 if args.dry:
                     cmdret = 0
                     print(cmd)
                 else:
-                    cmdret = os.system(cmd)
-                if cmdret:
-                    print "ERROR: testsuite execution failed"
-                    break
+                    if os.system(cmd):
+                        print "ERROR: testsuite execution failed"
+                        break
+
             os.system("rm -f " + os.getcwd() + "/svut_h.sv")
             sys.exit(cmdret)
+
         else:
             print ("ERROR: Command creation failed...")
             sys.exit(1)
