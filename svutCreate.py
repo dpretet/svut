@@ -73,13 +73,15 @@ if __name__ == '__main__':
         if ioFound == "No":
 
             if line[0:5] == "input":
-                _line = line.replace("wire", "reg ")
+                _line = line.replace("signed", "reg")
+                _line = _line.replace("wire", "reg ")
                 _line = _line.replace(",", ";")
                 _line = _line.replace("input", "")
                 instance["io"].append(_line.strip())
 
             if line[0:6] == "output":
                 _line = line.replace(",", ";")
+                _line = _line.replace("signed", "wire")
                 _line = _line.replace("output", "")
                 if _line[-1] != ";":
                     _line = _line + ";"
@@ -165,7 +167,7 @@ if __name__ == '__main__':
     utfile.write("""    end\n""")
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
-    utfile.write("""    `UNIT_TESTS\n""")
+    utfile.write("""    `UNIT_TESTS\n\n""")
     utfile.write("""        /* Available macros:\n""")
     utfile.write("""           - `INFO();\n""")
     utfile.write("""           - `WARNING();\n""")
@@ -177,8 +179,13 @@ if __name__ == '__main__':
     utfile.write("""        */\n""")
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TEST(TESTNAME)\n""")
-    utfile.write("""       `INFO(Start test);\n""")
+    utfile.write("""\n""")
+    utfile.write("""       `INFO("Start test");\n""")
+    utfile.write("""\n""")
     utfile.write("""        // Describe here your testcase\n""")
+    utfile.write("""\n""")
+    utfile.write("""       `INFO("End test");\n""")
+    utfile.write("""\n""")
     utfile.write("""    `UNIT_TEST_END\n""")
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TESTS_END\n""")
@@ -199,3 +206,7 @@ if __name__ == '__main__':
     print ""
     print "      cp $SVUT/Makefile.example ./Makefile"
     print ""
+    print "      Once copied, you can setup your fileset in files.f"
+    print ""
+
+    os.system("touch files.f")

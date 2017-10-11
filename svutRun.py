@@ -156,7 +156,8 @@ if __name__ == '__main__':
                     cmdret = 0
                     print(cmd)
                 else:
-                    if os.system(cmd):
+                    cmdret = os.system(cmd)
+                    if cmdret:
                         print "ERROR: testsuite execution failed"
                         break
 
