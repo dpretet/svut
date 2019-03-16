@@ -11,38 +11,31 @@ Hope it can help you!
 
 ### How to install it
 
-Git clone the repository in a path:
+Git clone the repository in a path and setup your $PATH to call the scripts from anywhere:
 
-    git clone git@githuh.com:ThotIp/svut.git yourPath
-
-for instance:
-
-    git clone git@githuh.com:ThotIp/svut.git $HOME/.svut
-
-
-And setup your $PATH to call the scripts from anywhere:
-    
+    git clone git@githuh.com:damofthemoon/svut.git yourPath
     export PATH="yourPath":$PATH
 
-for instance:
+For instance:
     
+    git clone git@githuh.com:damofthemoon/svut.git $HOME/.svut
     export PATH=$HOME/.svut/:$PATH
 
 ### How to use it
 
 To create a unit test of a verilog module, call the command:
 
-    ./svutCreate your_file.v
+    svutCreate your_file.v
 
 svut will create "your_file_unit_test.sv" which contains your module
 instanciated and a place to write your testcase(s).
 To run a test, call the command:
 
-    ./svutRun your_file_unit_test.sv
+    svutRun your_file_unit_test.sv
 
 or simply
     
-    ./svutRun
+    svutRun
 
 svut will scan your current folder, search for the files with "_unit_test.sv" suffix
 and run all tests available.
