@@ -3,7 +3,7 @@
 ## Introduction
 
 svut is a very simple flow to create a Verilog/SystemVerilog unit test.
-It is widely inspired by [SVUnit](http://agilesoc.com/open-source-projects/svunit/), 
+It is widely inspired by [SVUnit](http://agilesoc.com/open-source-projects/svunit/),
 but it's written in python and run with [Icarus Verilog](http://iverilog.icarus.com/).
 svut follows KISS principle: [Keep It Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
 
@@ -17,7 +17,7 @@ Git clone the repository in a path and setup your $PATH to call the scripts from
     export PATH="yourPath":$PATH
 
 For instance:
-    
+
     git clone git@githuh.com:damofthemoon/svut.git $HOME/.svut
     export PATH=$HOME/.svut/:$PATH
 
@@ -25,7 +25,7 @@ For instance:
 
 To create a unit test of a verilog module, call the command:
 
-    svutCreate your_file.v
+    svutCreate --name your_file.v
 
 svut will create "your_file_unit_test.sv" which contains your module
 instanciated and a place to write your testcase(s).
@@ -34,7 +34,7 @@ To run a test, call the command:
     svutRun your_file_unit_test.sv
 
 or simply
-    
+
     svutRun
 
 svut will scan your current folder, search for the files with "_unit_test.sv" suffix
