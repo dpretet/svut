@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2017 Damien Pretet ThotIP
+Copyright 2019 Damien Pretet
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import argparse
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
+    parser = argparse.ArgumentParser(description='SVUT Creator v1.0')
 
     parser.add_argument('--verbose', dest='verbose', type=str, default=0, help='Activate verbose mode')
 
@@ -32,6 +32,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.name = args.name[0]
+
     if os.path.isfile(args.name):
         verilog = open(args.name, "r")
         print "INFO: Start to generate the template"
@@ -39,6 +40,7 @@ if __name__ == '__main__':
         print "ERROR: Can't find file %s to load..." % args.name
         sys.exit(1)
 
+    intoComment = "No"
     moduleFound = "No"
     parameterFound = "No"
     ioFound = "No"
@@ -50,6 +52,15 @@ if __name__ == '__main__':
 
         # Remove space at beginning and end of line
         line = line.strip()
+
+        # Detect comment block and avoid to parse them
+        if line[0:1] == "/*":
+            intoComment = "Yes"
+        elif line[0:1] == "*/" or line[-2:] == "*/":
+            intoComment = "No"
+
+        if intoComment == "Yes":
+            continue
 
         # Search for the module name
         if moduleFound == "No":
@@ -63,7 +74,8 @@ if __name__ == '__main__':
         # Search for the parameter if present
         if parameterFound == "No":
             if line[0:9] == "parameter":
-                _line = line.replace("\t", " ")
+                _line = line.split("//")[0].strip()
+                _line = _line.replace("\t", " ")
                 _line = _line.replace(",", ";")
                 if _line[-1] != ";":
                     _line = _line + ";"
@@ -73,14 +85,17 @@ if __name__ == '__main__':
         if ioFound == "No":
 
             if line[0:5] == "input":
-                _line = line.replace("signed", "reg")
+                _line = line.split("//")[0].strip()
+                _line = _line.replace("signed", "reg")
                 _line = _line.replace("wire", "reg ")
                 _line = _line.replace(",", ";")
                 _line = _line.replace("input", "")
                 instance["io"].append(_line.strip())
 
             if line[0:6] == "output":
-                _line = line.replace(",", ";")
+
+                _line = line.split("//")[0].strip()
+                _line = _line.replace(",", ";")
                 _line = _line.replace("signed", "wire")
                 _line = _line.replace("output", "")
                 if _line[-1] != ";":
