@@ -19,25 +19,22 @@ limitations under the License.
 
 import os
 import sys
-import argparse
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='SVUT Creator v1.0')
+    file_name = ""
 
-    parser.add_argument('--verbose', dest='verbose', type=str, default=0, help='Activate verbose mode')
+    if len(sys.argv) >= 1:
+        file_name = sys.argv[1]
+    else:
+        print "ERROR: please specify a file to parse"
+        sys.exit(1)
 
-    parser.add_argument('--name', dest='name', type=str, default=None, nargs="*", help="The verilog module to load")
-
-    args = parser.parse_args()
-
-    args.name = args.name[0]
-
-    if os.path.isfile(args.name):
-        verilog = open(args.name, "r")
+    if os.path.isfile(file_name):
+        verilog = open(file_name, "r")
         print "INFO: Start to generate the template"
     else:
-        print "ERROR: Can't find file %s to load..." % args.name
+        print "ERROR: Can't find file %s to load..." % file_name
         sys.exit(1)
 
     intoComment = "No"
@@ -102,16 +99,17 @@ if __name__ == '__main__':
                     _line = _line + ";"
                 instance["io"].append(_line.strip())
 
-    if args.verbose:
-        print "INFO: information extracted:"
-        print instance
+    # print "INFO: information extracted:"
+    # print instance
 
-    utname = args.name + "_unit_test"
+    utname = file_name + "_unit_test"
 
     utfile = open(instance["name"] + "_unit_test.sv", "w")
 
-    utfile.write("`include \"svut_h.sv\"\n")
-    utfile.write("""`include \"""" + args.name + """\"\n""")
+    utfile.write("// Mandatory file to be able to launch SVUT flow\n")
+    utfile.write("`include \"svut_h.sv\"\n\n")
+    utfile.write("// Specify here the module to load or setup the path in files.f\n")
+    utfile.write("""//`include \"""" + file_name + """\"\n\n""")
     utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("""\n""")
     utfile.write("""module """ + instance["name"] + "_unit_test;\n")

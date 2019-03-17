@@ -53,8 +53,15 @@ def create_iverilog(args, test):
     cmd = "iverilog -g2012 "
 
     if args.dotfile:
-        dotfiles = " ".join(args.dotfile)
-        cmd += "-f " + dotfiles + " "
+
+        dotfiles = ""
+
+        for dot in args.dotfile:
+            if os.path.isfile(dot):
+                dotfiles += dot + " "
+
+        if dotfiles:
+            cmd += "-f " + dotfiles + " "
 
     if args.include:
         incs = " ".join(args.include)
@@ -108,8 +115,8 @@ if __name__ == '__main__':
     parser.add_argument('-test', dest='test', type=str, default="all", nargs="*",
                         help='Unit test to run. Can be a file or a list of files')
 
-    parser.add_argument('-f', dest='dotfile', type=str, default=None, nargs="*",
-                        help="A dot file (file.f) to load with incdir, define and fileset")
+    parser.add_argument('-f', dest='dotfile', type=str, default=["files.f"], nargs="*",
+                        help="A dot file (*.f) to load with incdir, define and fileset")
 
     parser.add_argument('-sim', dest='simulator', type=str,
                         default="icarus",
@@ -139,7 +146,7 @@ if __name__ == '__main__':
         args.simulator = args.simulator.lower()
 
         if "iverilog" in args.simulator.lower() or "icarus" in args.simulator.lower():
-            cmds = create_iverilog(args, tests, )
+            cmds = create_iverilog(args, tests)
 
         elif "modelsim" in args.simulator.lower() or "questa" in args.simulator.lower():
             cmds = create_questasim(args, tests)
