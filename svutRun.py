@@ -71,7 +71,7 @@ def create_iverilog(args, test):
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print ("ERROR: failed to find supported for the unit test. Must a Verilog (.v) or SystemVerilog file (*.sv)")
+        print ("ERROR: failed to find supported for the unit test. Must a Verilog (*.v) or SystemVerilog file (*.sv)")
         return 1
 
     cmds.append(cmd)
