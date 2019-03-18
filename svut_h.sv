@@ -15,17 +15,28 @@
 
 `ifndef INFO
 `define INFO(msg) \
-    $display("INFO:    [%g]: %s", $time, msg)
+    $display("%c[0;37mINFO:     [%g] %s%c[0m", 27, $time, msg, 27)
+`endif
+
+`ifndef SUCCESS
+`define SUCCESS(msg) \
+    $display("%c[0;32mSUCCESS:  [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
 `ifndef WARNING
 `define WARNING(msg) \
-    $display("WARNING: [%g]: %s", $time, msg)
+    $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27)
+`endif
+
+`ifndef CRITICAL
+`define CRITICAL(msg) \
+    $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
 `ifndef ERROR
 `define ERROR(msg) \
-    $display("ERROR:   [%g]: %s", $time, msg)
+    $display("%c[1;31mERROR:    [%g] %s%c[0m", 27, $time, msg, 27); \
+    svut_error = svut_error + 1
 `endif
 
 `ifndef SVUT_SETUP
@@ -74,7 +85,7 @@
         teardown(); \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-            `INFO("Test successful"); \
+            `SUCCESS("Test successful"); \
         end else begin \
             `ERROR("Test failed"); \
         end \
@@ -85,11 +96,11 @@
     endtask \
     initial begin\
         run(); \
-        $display("INFO:    Testsuite finished to run @ %g", $time); \
+        $display("%c[0;36mINFO:    Testsuite finished to run @ %g%c[0m", 27, $time, 27); \
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("ERROR:   Result: %3d / %3d", svut_nb_test_success, svut_nb_test); \
+            $display("%c[1;31mERROR: %3d / %3d tests passed%c[0m", 27, svut_nb_test_success, svut_nb_test, 27); \
         end else begin \
-            $display("INFO:    Result: %3d / %3d", svut_nb_test_success, svut_nb_test); \
+            $display("%c[0;32mSUCCESS: %3d / %3d tests passed%c[0m", 27, svut_nb_test_success, svut_nb_test, 27); \
         end \
         $finish(); \
     end \
