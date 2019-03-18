@@ -166,7 +166,7 @@ if __name__ == '__main__':
     utfile.write("""    // always #2 aclk <= ~aclk;\n""")
     utfile.write("""\n""")
     utfile.write("""    // An example to dump data for visualization\n""")
-    utfile.write("""    // initial $dumpvars(0,%s);\n""" % (instance["name"] + "_unit_test"))
+    utfile.write("""    // initial $dumpvars(0, %s);\n""" % (instance["name"] + "_unit_test"))
     utfile.write("""\n""")
     utfile.write("""    task setup();\n""")
     utfile.write("""    begin\n""")
