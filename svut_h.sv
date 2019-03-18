@@ -25,12 +25,14 @@
 
 `ifndef WARNING
 `define WARNING(msg) \
-    $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27)
+    $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27); \
+    svut_warning = svut_warning + 1
 `endif
 
 `ifndef CRITICAL
 `define CRITICAL(msg) \
-    $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27)
+    $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27); \
+    svut_critical = svut_critical + 1
 `endif
 
 `ifndef ERROR
@@ -41,6 +43,8 @@
 
 `ifndef SVUT_SETUP
 `define SVUT_SETUP \
+    integer svut_warning = 0; \
+    integer svut_critical = 0; \
     integer svut_error = 0; \
     integer svut_nb_test = 0; \
     integer svut_nb_test_success = 0; \
@@ -73,6 +77,7 @@
 `define UNIT_TESTS \
     task run(); \
     begin \
+    $display("\n%c[0;36mINFO:     Testsuite execution started%c[0m\n", 27, 27); \
 
 `define UNIT_TEST(TESTNAME) \
     begin : TESTNAME \
@@ -96,11 +101,17 @@
     endtask \
     initial begin\
         run(); \
-        $display("%c[0;36mINFO:    Testsuite finished to run @ %g%c[0m", 27, $time, 27); \
+        $display("\n%c[0;36mINFO:     Testsuite execution finished @ %g%c[0m\n", 27, $time, 27); \
+        if (svut_warning > 0) begin \
+            $display("\t  -> %c[1;33mWarning number: %4d%c[0m", 27, svut_warning, 27); \
+        end\
+        if (svut_critical > 0) begin \
+            $display("\t  -> %c[1;35mCritical number: %4d%c[0m", 27, svut_critical, 27); \
+        end\
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("%c[1;31mERROR: %3d / %3d tests passed%c[0m", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> %c[1;31mERROR: %3d / %3d tests passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
         end else begin \
-            $display("%c[0;32mSUCCESS: %3d / %3d tests passed%c[0m", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> %c[0;32mSUCCESS: %3d / %3d tests passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
         end \
         $finish(); \
     end \
