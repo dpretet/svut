@@ -90,9 +90,9 @@
         teardown(); \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-            `SUCCESS("Test successful"); \
+            `SUCCESS("Test successful\n"); \
         end else begin \
-            `ERROR("Test failed"); \
+            `ERROR("Test failed\n"); \
         end \
     end \
 
