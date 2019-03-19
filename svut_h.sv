@@ -52,26 +52,30 @@
 
 `ifndef FAIL_IF
 `define FAIL_IF(exp) \
-    if (exp) \
-        svut_error = svut_error + 1
+    if (exp) begin \
+        `ERROR("FAIL_IF"); \
+    end
 `endif
 
 `ifndef FAIL_IF_NOT
 `define FAIL_IF_NOT(exp) \
-    if (!exp) \
-        svut_error = svut_error + 1
+    if (!exp) begin \
+        `ERROR("FAIL_IF_NOT"); \
+    end
 `endif
 
 `ifndef FAIL_IF_EQUAL
 `define FAIL_IF_EQUAL(a,b) \
-    if (a === b) \
-        svut_error = svut_error + 1
+    if (a === b) begin \
+        `ERROR("FAIL_IF_EQUAL"); \
+    end
 `endif
 
 `ifndef FAIL_IF_NOT_EQUAL
 `define FAIL_IF_NOT_EQUAL(a,b) \
-    if (a !== b) \
-        svut_error = svut_error + 1
+    if (a !== b) begin \
+        `ERROR("FAIL_IF_NOT_EQUAL"); \
+    end
 `endif
 
 `define UNIT_TESTS \
