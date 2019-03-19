@@ -26,13 +26,13 @@
 `ifndef WARNING
 `define WARNING(msg) \
         $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27); \
-		svut_warning += 1
+        svut_warning += 1
 `endif
 
 `ifndef CRITICAL
 `define CRITICAL(msg) \
         $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27); \
-		svut_critical += 1
+        svut_critical += 1
 `endif
 
 `ifndef ERROR
@@ -134,13 +134,13 @@
         $display("\n%c[0;36mINFO:     Testsuite execution finished @ %g%c[0m\n", 27, $time, 27); \
         if (svut_warning > 0) begin \
             $display("\t  -> %c[1;33mWarning number: %4d%c[0m", 27, svut_warning, 27); \
-        end\
+        end \
         if (svut_critical > 0) begin \
             $display("\t  -> %c[1;35mCritical number: %4d%c[0m", 27, svut_critical, 27); \
-        end\
+        end \
         if (svut_error_total > 0) begin \
             $display("\t  -> %c[1;31mError number: %4d%c[0m", 27, svut_error_total, 27); \
-        end\
+        end \
         if (svut_nb_test_success != svut_nb_test) begin \
             $display("\t  -> %c[1;31mSTATUS: %4d / %4d tests passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
         end else begin \
