@@ -42,10 +42,10 @@ and run all tests available.
 
 Enjoy!
 
-PS: [Verilator](https://www.veripool.org/wiki/verilator) simulator is planned soon, as QuestaSim
+## External tools
 
-PS: To use make gui command, opening by default GTKwave, be sure to setup properly this tool in your path.
-    For Mac OS users, first install with brew:
+To use make gui command, opening by default GTKwave, be sure to setup properly this tool in your path.
+For Mac OS users, first install with brew:
 
     brew cask install gtkwave
 
@@ -58,3 +58,5 @@ You may need to install a Perl module, Switch. First enter in cpan (juste type c
     install Switch
 
 GTKWave should open up without problems :)
+
+PS: [Verilator](https://www.veripool.org/wiki/verilator) simulator is planned soon
