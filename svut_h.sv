@@ -119,8 +119,8 @@
             svut_nb_test_success = svut_nb_test_success + 1; \
             `SUCCESS("Test successful\n"); \
         end else begin \
-            svut_error_total += svut_error; \
             `ERROR("Test failed\n"); \
+            svut_error_total += svut_error; \
         end \
     end
 `endif

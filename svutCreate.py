@@ -43,7 +43,7 @@ if __name__ == '__main__':
     ioFound = "No"
     done = "No"
 
-    instance = {"name": None, "io": [], "parameter": []}
+    instance = {"name": "", "io": [], "parameter": []}
 
     for line in verilog:
 
