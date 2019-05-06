@@ -6,6 +6,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install iverilog
 script:
-    - iverilog -v
+    - iverilog -V
     - bash test/lint.sh
-    - cd test && bash regression.sh
+      #    - cd test && bash regression.sh
