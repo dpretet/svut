@@ -3,9 +3,10 @@
 # pipe fails if first command fails. Else is always successful
 set -o pipefail
 rm -f regression.txt; touch regression.txt
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 error_num=7
 
-svutRun -test Adder_unit_test_OK.sv | tee -a regression.txt
+$DIR/../svutRun -test "Adder_unit_test_OK.sv" | tee -a regression.txt
 ret=$?
 
 if [[ $ret != 0 ]]; then
@@ -14,7 +15,7 @@ else
     echo "Execution completed successfully"
 fi
 
-svutRun -test Adder_unit_test_KO.sv | tee -a regression.txt
+$DIR/../svutRun -test "Adder_unit_test_KO.sv" | tee -a regression.txt
 ret=$?
 ec=$(grep -c "ERROR:" regression.txt)
 
@@ -27,5 +28,6 @@ if [[ $ret == 0 ]]; then
         exit 0
     fi
 else
-    echo "No errors detected while 8 exepected"
+    echo "No errors detected while several exepected"
+    exit 1
 fi
