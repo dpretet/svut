@@ -3,8 +3,9 @@
 # pipe fails if first command fails. Else is always successful
 set -o pipefail
 rm -f lint.txt; touch lint.txt
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-pylint -d C0301 -d C0103 ../svutRun.py | tee -a lint.txt
+pylint -d C0301 -d C0103 $DIR/../svutRun.py | tee -a lint.txt
 ret=$?
 
 if [[ $ret != 0 ]]; then
@@ -13,7 +14,7 @@ else
     echo "svutRun.py finished successfully"
 fi
 
-pylint -d C0301 -d C0103 ../svutCreate.py | tee -a lint.txt
+pylint -d C0301 -d C0103 $DIR/../svutCreate.py | tee -a lint.txt
 ret=$?
 
 if [[ $ret != 0 ]]; then
