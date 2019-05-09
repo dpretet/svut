@@ -25,13 +25,13 @@ For instance:
 
 To create a unit test of a verilog module, call the command:
 
-    svutCreate --name your_file.v
+    svutCreate your_file.v
 
 svut will create "your_file_unit_test.sv" which contains your module
 instanciated and a place to write your testcase(s).
 To run a test, call the command:
 
-    svutRun your_file_unit_test.sv
+    svutRun -test your_file_unit_test.sv
 
 or simply
 
