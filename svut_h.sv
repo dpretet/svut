@@ -142,9 +142,9 @@
             $display("\t  -> %c[1;31mError number: %4d%c[0m", 27, svut_error_total, 27); \
         end \
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("\t  -> %c[1;31mSTATUS: %4d / %4d tests passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> %c[1;31mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
         end else begin \
-            $display("\t  -> %c[0;32mSTATUS: %4d / %4d tests passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> %c[0;32mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
         end \
         $finish(); \
     end
