@@ -14,7 +14,7 @@ Hope it can help you!
 Git clone the repository in a path and setup your $PATH to call the scripts from
 anywhere. For instance:
 
-    git clone git@githuh.com:damofthemoon/svut.git $HOME/.svut
+    git clone git@github.com:damofthemoon/svut.git $HOME/.svut
     export PATH=$HOME/.svut/:$PATH
 
 ### How to use it
