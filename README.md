@@ -11,11 +11,12 @@ Hope it can help you!
 
 ### How to install it
 
-Git clone the repository in a path and setup your $PATH to call the scripts from
-anywhere. For instance:
+Git clone the repository in a path. Set up the SVUT environment variable 
+and add SVUT to $PATH:
 
     git clone git@github.com:damofthemoon/svut.git $HOME/.svut
-    export PATH=$HOME/.svut/:$PATH
+    export SVUT=$HOME/.svut
+    export PATH=$SVUT:$PATH
 
 ### How to use it
 

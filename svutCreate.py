@@ -216,7 +216,7 @@ if __name__ == '__main__':
     print ""
     print "      To launch SVUT, don't forget to setup its environment variable. For instance:"
     print ""
-    print "      export SVUT=\"HOME/.svut\""
+    print "      export SVUT=\"$HOME/.svut\""
     print "      export PATH=$SVUT:$PATH"
     print ""
     print "      You can find a Makefile example to launch your unit test in your SVUT install folder"
