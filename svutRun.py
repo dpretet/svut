@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
     ARGS = PARSER.parse_args()
 
-    if "all" in ARGS.test.lower():
+    if "all" in [t.lower() for t in ARGS.test]:
         ARGS.test = find_unit_tests()
 
     for tests in ARGS.test:
