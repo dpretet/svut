@@ -23,12 +23,6 @@ import argparse
 
 CURDIR = os.path.abspath(os.path.dirname(__file__))
 
-"""
-TODO:
-* support verilator
-* support questasim
-"""
-
 
 def find_unit_tests():
     """
@@ -40,7 +34,9 @@ def find_unit_tests():
         # Check only the files
         if os.path.isfile(_file):
             # Ensure its at least a verilog file
-            if _file.endswith("unit_test.sv") or _file.endswith("unit_test.v"):
+            if _file.endswith("unit_test.sv") or _file.endswith("unit_test.v")\
+                or _file.endswith("_tb.sv") or _file.endswith("_tb.v")\
+                    or _file.startswith("tb_"):
                 files.append(_file)
     return files
 
@@ -71,7 +67,7 @@ def create_iverilog(args, test):
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print "ERROR: failed to find supported for the unit test. Must a Verilog (*.v) or SystemVerilog file (*.sv)"
+        print("ERROR: failed to find supported for the unit test. Must a Verilog (*.v) or SystemVerilog file (*.sv)")
         return 1
 
     cmds.append(cmd)
@@ -90,6 +86,7 @@ def create_iverilog(args, test):
     return cmds
 
 
+# TODO: Support Verilator
 def create_verilator():
     """
     Create the Verilator command to launch the simulation
@@ -126,10 +123,8 @@ if __name__ == '__main__':
 
     ARGS = PARSER.parse_args()
 
-    if isinstance(ARGS.test, basestring):
-
-        if "all" in ARGS.test.lower():
-            ARGS.test = find_unit_tests()
+    if "all" in ARGS.test.lower():
+        ARGS.test = find_unit_tests()
 
     for tests in ARGS.test:
 
@@ -155,12 +150,12 @@ if __name__ == '__main__':
                 else:
                     cmdret = os.system(CMD)
                     if cmdret:
-                        print "ERROR: testsuite execution failed"
-                        break
+                        print("ERROR: testsuite execution failed")
 
             os.system("rm -f " + os.getcwd() + "/svut_h.sv")
-            sys.exit(cmdret)
 
         else:
-            print "ERROR: Command creation failed..."
+            print("ERROR: Command creation failed...")
             sys.exit(1)
+
+    sys.exit(0)
