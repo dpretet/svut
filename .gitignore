@@ -92,3 +92,5 @@ ENV/
 .vscode
 tags
 .tags
+*.out
+*.vcd
