@@ -13,55 +13,34 @@
 // limitations under the License.
 
 
-/* Message macros *************************************************************
- *  `INFO("message"); Print a grey message
- *  `SUCCESS("message"); Print a green message
- *  `WARNING("message"); Print an orange message and increment warning counter
- *  `CRITICAL("message"); Print an pink message and increment critical counter
- *  `ERROR("message"); Print a red message and increment error counter
- */
-
-// Writes msg in grey with an INFO prefix
 `ifndef INFO
 `define INFO(msg) \
         $display("%c[0;37mINFO:     [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
-// Write msg in green. Called on test success.
 `ifndef SUCCESS
 `define SUCCESS(msg) \
         $display("%c[0;32mSUCCESS:  [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
-// Writes msg in orange and increments warning counter
 `ifndef WARNING
 `define WARNING(msg) \
         $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27); \
         svut_warning += 1
 `endif
 
-// Writes msg in pink and increments critical counter
 `ifndef CRITICAL
 `define CRITICAL(msg) \
         $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27); \
         svut_critical += 1
 `endif
 
-// Writes message in red and and increments error counter. 
-// msg2 is used by FAIL_ macros and may be omitted.
 `ifndef ERROR
 `define ERROR(msg, msg2="", prefix="ERROR:   ") \
         $display("%c[1;31m%s [%g] %s %s%c[0m", 27, prefix, $time, msg, msg2, 27); \
         svut_error += 1
 `endif
 
-/*  Setup and status **********************************************************
- *  `SVUT_SETUP: Call before defining tests
- *
- *  `LAST_STATUS returns 1 if last test failed, 0 if passed
- */
-
-// Call before defining unit tests
 `ifndef SVUT_SETUP
 `define SVUT_SETUP \
     integer svut_status = 0; \
@@ -79,25 +58,10 @@
 `define LAST_STATUS svut_status
 `endif
 
-/* Check macros  **************************************************************
- * "Fail if" style
- *  `FAIL_IF(aSignal, optional_reason); Increment error counter if evaluaton is positive
- *	`FAIL_IF_NOT(aSignal, optional_reason); Increment error counter if evaluation is false
- *  `FAIL_IF_EQUAL(aSignal, 23, optional_reason); Increment error counter if evaluation is equal
- *  `FAIL_IF_NOT_EQUAL(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
- *
- * XUnit style
- *	`ASSERT(aSignal, optional_reason); Increment error counter if evaluation is false
- *  `ASSERT_EQUAL(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
- *  `ASSERT_EQUALS(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
-*/
-
-
-// Increments error counter if exp is true
 `ifndef FAIL_IF
-`define FAIL_IF(exp, reason="") \
+`define FAIL_IF(exp) \
     if (exp) begin \
-        `ERROR("FAIL_IF ", reason); \
+        `ERROR("FAIL_IF"); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
@@ -119,11 +83,10 @@
     `FAIL_IF_NOT(exp, reason, "ASSERT ");
 `endif
 
-
 `ifndef FAIL_IF_EQUAL
-`define FAIL_IF_EQUAL(a,b, reason="") \
+`define FAIL_IF_EQUAL(a,b) \
     if (a === b) begin \
-        `ERROR("FAIL_IF_EQUAL", reason); \
+        `ERROR("FAIL_IF_EQUAL"); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
@@ -148,7 +111,7 @@
 `ifndef ASSERT_EQUALS
 `define ASSERT_EQUALS(a,b, reason="") \
     if (a !== b) begin \
-        `ERROR("ASSERT_EQUALS", reason); \
+        `ERROR("FAIL_IF_NOT_EQUAL"); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
