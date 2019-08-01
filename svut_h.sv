@@ -13,34 +13,55 @@
 // limitations under the License.
 
 
+/* Message macros *************************************************************
+ *  `INFO("message"); Print a grey message
+ *  `SUCCESS("message"); Print a green message
+ *  `WARNING("message"); Print an orange message and increment warning counter
+ *  `CRITICAL("message"); Print an pink message and increment critical counter
+ *  `ERROR("message"); Print a red message and increment error counter
+ */
+
+// Writes msg in grey with an INFO prefix
 `ifndef INFO
 `define INFO(msg) \
         $display("%c[0;37mINFO:     [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
+// Write msg in green. Called on test success.
 `ifndef SUCCESS
 `define SUCCESS(msg) \
         $display("%c[0;32mSUCCESS:  [%g] %s%c[0m", 27, $time, msg, 27)
 `endif
 
+// Writes msg in orange and increments warning counter
 `ifndef WARNING
 `define WARNING(msg) \
         $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27); \
         svut_warning += 1
 `endif
 
+// Writes msg in pink and increments critical counter
 `ifndef CRITICAL
 `define CRITICAL(msg) \
         $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27); \
         svut_critical += 1
 `endif
 
+// Writes message in red and and increments error counter. 
+// msg2 is used by FAIL_ macros and may be omitted.
 `ifndef ERROR
-`define ERROR(msg) \
-        $display("%c[1;31mERROR:    [%g] %s%c[0m", 27, $time, msg, 27); \
+`define ERROR(msg, msg2="") \
+        $display("%c[1;31mERROR:    [%g] %s %s%c[0m", 27, $time, msg, msg2, 27); \
         svut_error += 1
 `endif
 
+/*  Setup and status **********************************************************
+ *  `SVUT_SETUP: Call before defining tests
+ *
+ *  `LAST_STATUS returns 1 if last test failed, 0 if passed
+ */
+
+// Call before defining unit tests
 `ifndef SVUT_SETUP
 `define SVUT_SETUP \
     integer svut_status = 0; \
@@ -49,17 +70,33 @@
     integer svut_error = 0; \
     integer svut_error_total = 0; \
     integer svut_nb_test = 0; \
-    integer svut_nb_test_success = 0;
+    integer svut_nb_test_success = 0; \
+    string suite_name = "", error_message = "";
 `endif
 
 `ifndef LAST_STATUS
 `define LAST_STATUS svut_status
 `endif
 
+/* Check macros  **************************************************************
+ * "Fail if" style
+ *  `FAIL_IF(aSignal, optional_reason); Increment error counter if evaluaton is positive
+ *	`FAIL_IF_NOT(aSignal, optional_reason); Increment error counter if evaluation is false
+ *  `FAIL_IF_EQUAL(aSignal, 23, optional_reason); Increment error counter if evaluation is equal
+ *  `FAIL_IF_NOT_EQUAL(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
+ *
+ * XUnit style
+ *	`ASSERT(aSignal, optional_reason); Increment error counter if evaluation is false
+ *  `ASSERT_EQUAL(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
+ *  `ASSERT_EQUALS(aSignal, 45, optional_reason); Increment error counter if evaluation is not equal
+*/
+
+
+// Increments error counter if exp is true
 `ifndef FAIL_IF
-`define FAIL_IF(exp) \
+`define FAIL_IF(exp, reason="") \
     if (exp) begin \
-        `ERROR("FAIL_IF"); \
+        `ERROR("FAIL_IF ", reason); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
@@ -67,19 +104,30 @@
 `endif
 
 `ifndef FAIL_IF_NOT
-`define FAIL_IF_NOT(exp) \
+`define FAIL_IF_NOT(exp, reason="") \
     if (!exp) begin \
-        `ERROR("FAIL_IF_NOT"); \
+        `ERROR("FAIL_IF_NOT", reason); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
     end
 `endif
 
+`ifndef ASSERT
+`define ASSERT(exp, reason="") \
+    if (!exp) begin \
+        `ERROR("ASSERT", reason); \
+        svut_status = 1; \
+    end else begin \
+        svut_status = 0; \
+    end
+`endif
+
+
 `ifndef FAIL_IF_EQUAL
-`define FAIL_IF_EQUAL(a,b) \
+`define FAIL_IF_EQUAL(a,b, reason="") \
     if (a === b) begin \
-        `ERROR("FAIL_IF_EQUAL"); \
+        `ERROR("FAIL_IF_EQUAL", reason); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
@@ -87,14 +135,46 @@
 `endif
 
 `ifndef FAIL_IF_NOT_EQUAL
-`define FAIL_IF_NOT_EQUAL(a,b) \
+`define FAIL_IF_NOT_EQUAL(a,b, reason="") \
     if (a !== b) begin \
-        `ERROR("FAIL_IF_NOT_EQUAL"); \
+        `ERROR("FAIL_IF_NOT_EQUAL", reason); \
         svut_status = 1; \
     end else begin \
         svut_status = 0; \
     end
 `endif
+
+`ifndef ASSERT_EQUAL
+`define ASSERT_EQUAL(a,b, reason="") \
+    if (a !== b) begin \
+        `ERROR("ASSERT_EQUAL", reason); \
+        svut_status = 1; \
+    end else begin \
+        svut_status = 0; \
+    end
+`endif
+
+`ifndef ASSERT_EQUALS
+`define ASSERT_EQUALS(a,b, reason="") \
+    if (a !== b) begin \
+        `ERROR("ASSERT_EQUALS", reason); \
+        svut_status = 1; \
+    end else begin \
+        svut_status = 0; \
+    end
+`endif
+
+/* Test and Test suite definition  ********************************************
+ * "Fail if" style
+ *  `UNIT_TESTS -- Call to define an unnamed test suite
+ *  `UNIT_TESTS_END -- End unnamed test suite
+ *
+ *  `TEST_SUITE(name) -- Define a named test suite (name is shown in test output)
+ *  `TEST_SUITE_END(name) -- End a named test suite (name is shown in test output)
+ *
+ *	`UNIT_TEST(name) -- begin a unit test and give it an optional name
+*	`UNIT_TEST_END -- end a unit test
+*/
 
 `ifndef UNIT_TESTS
 `define UNIT_TESTS \
@@ -103,12 +183,15 @@
     $display("\n%c[0;36mINFO:     Testsuite execution started%c[0m\n", 27, 27);
 `endif
 
+
 `ifndef UNIT_TEST
-`define UNIT_TEST(TESTNAME) \
-    begin : TESTNAME \
+`define UNIT_TEST(test_name="test") \
+    begin \
+    	$display("%c[0;34mTESTING:  [%g] %s%c[0m", 27, $time, test_name, 27); \
         setup(); \
         svut_error = 0; \
         svut_nb_test = svut_nb_test + 1;
+
 `endif
 
 `ifndef UNIT_TEST_END
@@ -150,3 +233,35 @@
     end
 `endif
 
+`ifndef TEST_SUITE
+`define TEST_SUITE(name="Suite") \
+    task run(); \
+    begin \
+    	suite_name = name; \
+    	$display("\n%c[0;36mTEST SUITE:  %s execution started%c[0m\n", 27, name, 27);
+`endif
+
+`ifndef TEST_SUITE_END
+`define TEST_SUITE_END \
+    end \
+    endtask \
+    initial begin\
+        run(); \
+        $display("\n%c[0;36mTEST SUITE:  %s execution finished @ %g%c[0m\n", 27, suite_name, $time, 27); \
+        if (svut_warning > 0) begin \
+            $display("\t  -> %c[1;33mWarning number: %4d%c[0m", 27, svut_warning, 27); \
+        end \
+        if (svut_critical > 0) begin \
+            $display("\t  -> %c[1;35mCritical number: %4d%c[0m", 27, svut_critical, 27); \
+        end \
+        if (svut_error_total > 0) begin \
+            $display("\t  -> %c[1;31mError number: %4d%c[0m", 27, svut_error_total, 27); \
+        end \
+        if (svut_nb_test_success != svut_nb_test) begin \
+            $display("\t  -> %c[1;31mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+        end else begin \
+            $display("\t  -> %c[0;32mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+        end \
+        $finish(); \
+    end
+`endif
