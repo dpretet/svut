@@ -91,7 +91,7 @@ ENV/
 # Editing
 .vscode
 
-# Regression testing
-test/a.out
+# Testing artifacts
+a.out
+dump.vcd
 test/regression.txt
-test/dump.vcd

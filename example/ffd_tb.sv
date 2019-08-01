@@ -65,10 +65,13 @@ module ffd_tb;
                - `WARNING("message"); Print an orange message and increment warning counter
                - `CRITICAL("message"); Print an pink message and increment critical counter
                - `ERROR("message"); Print a red message and increment error counter
+
                - `FAIL_IF(aSignal); Increment error counter if evaluaton is positive
+               - `ASSERT(aSignal, [reason]); Same as FAIL_IF, reason string is optional
                - `FAIL_IF_NOT(aSignal); Increment error coutner if evaluation is false
                - `FAIL_IF_EQUAL(aSignal, 23); Increment error counter if evaluation is equal
                - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error counter if evaluation is not equal
+               - `ASSERT_EQUAL(aSignal, value, [reason]); Same as FAIL_IF_NOT_EQUAL, with optional reason
         */
 
         /* Available flag:
@@ -77,7 +80,7 @@ module ffd_tb;
         */
 
     // WAS: UNIT_TEST
-    `NAMED_TEST("TEST_IF_RESET_IS_APPLIED_WELL")
+    `NAMED_TEST("Test if reset is applied well")
 
             `ASSERT(q);
 
