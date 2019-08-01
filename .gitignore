@@ -90,3 +90,5 @@ ENV/
 
 # Editing
 .vscode
+tags
+.tags
