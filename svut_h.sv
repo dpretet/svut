@@ -110,12 +110,7 @@
 
 `ifndef ASSERT_EQUALS
 `define ASSERT_EQUALS(a,b, reason="") \
-    if (a !== b) begin \
-        `ERROR("FAIL_IF_NOT_EQUAL"); \
-        svut_status = 1; \
-    end else begin \
-        svut_status = 0; \
-    end
+    `ASSERT_EQUAL(a,b, reason)
 `endif
 
 /* Test and Test suite definition  ********************************************
