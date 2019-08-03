@@ -1,5 +1,7 @@
 # SystemVerilog Unit Test (SVUT)
 
+[![Build Status](https://travis-ci.org/damofthemoon/svut.svg?branch=master)](https://travis-ci.org/damofthemoon/svut)
+
 ## Introduction
 
 svut is a very simple flow to create a Verilog/SystemVerilog unit test.
@@ -11,7 +13,7 @@ Hope it can help you!
 
 ### How to install it
 
-Git clone the repository in a path. Set up the SVUT environment variable 
+Git clone the repository in a path. Set up the SVUT environment variable
 and add SVUT to $PATH:
 
     git clone git@github.com:damofthemoon/svut.git $HOME/.svut
