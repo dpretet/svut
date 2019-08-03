@@ -90,3 +90,8 @@ ENV/
 
 # Editing
 .vscode
+
+# Testing artifacts
+a.out
+dump.vcd
+test/regression.txt
