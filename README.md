@@ -1,13 +1,19 @@
 # SystemVerilog Unit Test (SVUT)
 
+[![GitHub license](https://img.shields.io/github/license/damofthemoon/svut)](https://github.com/damofthemoon/svut/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/damofthemoon/svut.svg?branch=master)](https://travis-ci.org/damofthemoon/svut)
+[![GitHub issues](https://img.shields.io/github/issues/damofthemoon/svut)](https://github.com/damofthemoon/svut/issues)
+[![GitHub stars](https://img.shields.io/github/stars/damofthemoon/svut)](https://github.com/damofthemoon/svut/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/damofthemoon/svut)](https://github.com/damofthemoon/svut/network)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/damofthemoon/svut?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fdamofthemoon%2Fsvut)
+
 
 ## Introduction
 
-svut is a very simple flow to create a Verilog/SystemVerilog unit test.
+SVUT is a very simple flow to create a Verilog/SystemVerilog unit test.
 It is widely inspired by [SVUnit](http://agilesoc.com/open-source-projects/svunit/),
 but it's written in python and run with [Icarus Verilog](http://iverilog.icarus.com/).
-svut follows KISS principle: [Keep It Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
+SVUT follows KISS principle: [Keep It Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
 
 Hope it can help you!
 
@@ -26,7 +32,7 @@ To create a unit test of a verilog module, call the command:
 
     svutCreate your_file.v
 
-svut will create "your_file_unit_test.sv" which contains your module
+SVUT will create "your_file_unit_test.sv" which contains your module
 instanciated and a place to write your testcase(s). Some codes are also commented
 to describe the different macros and how to create a clock or dump a VCD for GTKWave.
 To run a test, call the command:
@@ -37,7 +43,7 @@ or simply
 
     svutRun
 
-svut will scan your current folder, search for the files with "_unit_test.sv" suffix
+SVUT will scan your current folder, search for the files with "_unit_test.sv" suffix
 and run all tests available.
 
 # Example
@@ -136,6 +142,7 @@ For Mac OS users, first install with brew:
     brew cask install gtkwave
 
 Then setup your path to launch `gtkwave` from your shell (restart it)
+
     export PATH=/Applications/gtkwave.app/Contents/Resources/bin/:$PATH
 
 You may need to install a Perl module, Switch. First enter in cpan (juste type cpan in your shell,
@@ -145,23 +152,23 @@ or sudo cpan), then:
 
 GTKWave should open up without problems :)
 
-# TODO
-
-- [ ] Add [Verilator](https://www.veripool.org/wiki/verilator) support
-- [X] Add JUnit-style macros, including optional names on tests and test suites.
 
 ## License
 
 Copyright 2019 Damien Pretet
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following conditions:
 
-    http://www.apache.org/licenses/LICENSE-2.0
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+imitations under the License.
