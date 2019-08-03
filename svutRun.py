@@ -96,7 +96,8 @@ def create_verilator():
 
 if __name__ == '__main__':
 
-    PARSER = argparse.ArgumentParser(description='ThotIP Unit test runner v1.0')
+    PARSER = argparse.ArgumentParser(
+        description='ThotIP Unit test runner v1.0')
 
     PARSER.add_argument('-test', dest='test', type=str, default="all", nargs="*",
                         help='Unit test to run. Can be a file or a list of files')
@@ -121,6 +122,7 @@ if __name__ == '__main__':
 
     ARGS = PARSER.parse_args()
 
+    # Fixes issues with older versions of the argument parser
     if ARGS.test == "all" or "all" in [t.lower() for t in ARGS.test]:
         ARGS.test = find_unit_tests()
 
