@@ -31,16 +31,21 @@ def find_unit_tests():
     """
     Parse all unit test files of the current folder
     """
+
+    supported_prefix = ["tb_"]
+    supported_suffix = ["unit_test.sv", "unit_test.v",
+                        "testsuite.v", "testsuite.sv", "_tb.v", "_tb.sv"]
     files = []
     # Parse the current folder
     for _file in os.listdir(os.getcwd()):
         # Check only the files
         if os.path.isfile(_file):
-            # Ensure its at least a verilog file
-            if _file.endswith("unit_test.sv") or _file.endswith("unit_test.v")\
-                or _file.endswith("_tb.sv") or _file.endswith("_tb.v")\
-                    or _file.startswith("tb_"):
-                files.append(_file)
+            for suffix in supported_suffix:
+                if _file.endswith(suffix):
+                    files.append(_file)
+            for prefix in supported_prefix:
+                if _file.startswith(prefix):
+                    files.append(_file)
     return files
 
 
@@ -70,8 +75,8 @@ def create_iverilog(args, test):
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported for the unit test. Must a Verilog (*.v) or SystemVerilog file (*.sv)")
-        return 1
+        print("ERROR: failed to find supported extension. Mus use either *.v or *.sv")
+        sys.exit(1)
 
     cmds.append(cmd)
 
@@ -112,7 +117,7 @@ if __name__ == '__main__':
 
     PARSER.add_argument('-sim', dest='simulator', type=str,
                         default="icarus",
-                        help='The simulator to use. Can be Icarus Verilog, Verilator or Questasim')
+                        help='The simulator to use. Can be Icarus Verilog only. Verilator planned.')
 
     PARSER.add_argument('-gui', dest='gui',
                         action='store_true',
@@ -120,15 +125,14 @@ if __name__ == '__main__':
 
     PARSER.add_argument('-dry-run', dest='dry',
                         action='store_true',
-                        help='Just print the command, don\'t execute')
+                        help='Just print the command, don\'t execute. For debug purpose')
 
     PARSER.add_argument('-I', dest='include', type=str, nargs="*",
                         default="", help='An include folder')
 
     ARGS = PARSER.parse_args()
 
-    # Fixes issues with older versions of the argument parser
-    if ARGS.test == "all" or "all" in [t.lower() for t in ARGS.test]:
+    if ARGS.test == "all":
         ARGS.test = find_unit_tests()
 
     for tests in ARGS.test:
@@ -139,28 +143,23 @@ if __name__ == '__main__':
         if "iverilog" in ARGS.simulator or "icarus" in ARGS.simulator:
             CMDS = create_iverilog(ARGS, tests)
 
-        elif "verilator" in ARGS.simulator:
-            CMDS = create_verilator()
-
-        # Execute command on creation success
-        if CMDS != 1:
-
-            # First copy macro in the user folder
-            os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
-
-            for CMD in CMDS:
-
-                if ARGS.dry:
-                    cmdret = 0
-                else:
-                    cmdret = os.system(CMD)
-                    if cmdret:
-                        print("ERROR: testsuite execution failed")
-
-            os.system("rm -f " + os.getcwd() + "/svut_h.sv")
-
         else:
-            print("ERROR: Command creation failed...")
+            print("ERROR: Simulator not supported. Icarus is the only option")
             sys.exit(1)
+
+        # First copy macro in the user folder
+        os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
+
+        # The execute all commands
+        for CMD in CMDS:
+
+            if ARGS.dry:
+                cmdret = 0
+            else:
+                cmdret = os.system(CMD)
+                if cmdret:
+                    print("ERROR: testsuite execution failed")
+
+        os.system("rm -f " + os.getcwd() + "/svut_h.sv")
 
     sys.exit(0)
