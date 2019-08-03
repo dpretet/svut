@@ -25,6 +25,8 @@ import sys
 
 if __name__ == '__main__':
 
+    # Handle the input arguments. A file must be passed
+    # and exists in file system
     file_name = ""
 
     if len(sys.argv) >= 1:
@@ -40,6 +42,10 @@ if __name__ == '__main__':
         print("ERROR: Can't find file %s to load..." % file_name)
         sys.exit(1)
 
+    # The next section will parse the user file and extract the parameters list,
+    # the IOs name and width and the module name. Expect Verilog 2005 style ONLY!
+
+    # List of flags activated during parsing steps.
     intoComment = "No"
     moduleFound = "No"
     parameterFound = "No"
@@ -48,12 +54,21 @@ if __name__ == '__main__':
 
     instance = {"name": "", "io": [], "parameter": []}
 
+    # One by one the loop will detect the different part of the
+    # module declaration. Steps are:
+    # 1. Detect block comments in file header
+    # 2. Detect module name
+    # 3. Detect parameters
+    # 4. Detect input/output of the module
+    # Once detected, store the result for testsuite writing
+
     for line in verilog:
 
         # Remove space at beginning and end of line
         line = line.strip()
 
-        # Detect comment block and avoid to parse them
+        # Detect comment block in header
+        # and avoid to parse them
         if line[0:1] == "/*":
             intoComment = "Yes"
         elif line[0:1] == "*/" or line[-2:] == "*/":
@@ -63,6 +78,9 @@ if __name__ == '__main__':
             continue
 
         # Search for the module name
+        # if `module` found, split line with " "
+        # and get the last part, the name.
+        # Expect `module module_name`alone on the line
         if moduleFound == "No":
             if "module" in line:
                 moduleFound = "Yes"
@@ -72,6 +90,10 @@ if __name__ == '__main__':
                     instance["name"] = instance["name"][:-1]
 
         # Search for the parameter if present
+        # search a line with `parameter`, remove comment,
+        # replace comma with semicolon and store the line,
+        # ready to be written as a parameter declaration in
+        # testsuite file
         if parameterFound == "No":
             if line[0:9] == "parameter":
                 _line = line.split("//")[0].strip()
@@ -82,6 +104,10 @@ if __name__ == '__main__':
                 instance["parameter"].append(_line)
 
         # Search for the input and output
+        # Search for input or ouput, change comma
+        # to semicolon, signed|wire to reg and
+        # remove IO mode. Ready to be written
+        # into testsuite file.
         if ioFound == "No":
 
             if line[0:5] == "input":
@@ -102,9 +128,9 @@ if __name__ == '__main__':
                     _line = _line + ";"
                 instance["io"].append(_line.strip())
 
-    # print "INFO: information extracted:"
-    # print instance
-
+    # This section stores the testsuite file with inforamtion
+    # extracted. Give also example to use the macro, create a clock,
+    # dump signals in a waveform and skeleton of the testsuite.
     utname = file_name + "_unit_test"
 
     utfile = open(instance["name"] + "_unit_test.sv", "w")
@@ -214,6 +240,8 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.close()
 
+    # After the file is written and ready to use, print the terminal recommandation
+    # to call SVUT flow.
     print("")
     print("INFO: Unit test template for %s generated in: %s" % (instance["name"], instance["name"] + "_unit_test.sv"))
     print("")
