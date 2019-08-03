@@ -2,17 +2,22 @@
 # -*- coding: utf-8 -*-
 
 """
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Copyright 2019 Damien Pretet
 
-    http://www.apache.org/licenses/LICENSE-2.0
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following conditions:
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import os
@@ -25,14 +30,14 @@ if __name__ == '__main__':
     if len(sys.argv) >= 1:
         file_name = sys.argv[1]
     else:
-        print "ERROR: please specify a file to parse"
+        print("ERROR: please specify a file to parse")
         sys.exit(1)
 
     if os.path.isfile(file_name):
         verilog = open(file_name, "r")
-        print "INFO: Start to generate the template"
+        print("INFO: Start to generate the template")
     else:
-        print "ERROR: Can't find file %s to load..." % file_name
+        print("ERROR: Can't find file %s to load..." % file_name)
         sys.exit(1)
 
     intoComment = "No"
@@ -209,19 +214,19 @@ if __name__ == '__main__':
     utfile.write("""\n""")
     utfile.close()
 
-    print ""
-    print "INFO: Unit test template for %s generated in: %s" % (instance["name"], instance["name"] + "_unit_test.sv")
-    print ""
-    print "      To launch SVUT, don't forget to setup its environment variable. For instance:"
-    print ""
-    print "      export SVUT=\"$HOME/.svut\""
-    print "      export PATH=$SVUT:$PATH"
-    print ""
-    print "      You can find a Makefile example to launch your unit test in your SVUT install folder"
-    print ""
-    print "      cp $SVUT/Makefile.example ./Makefile"
-    print ""
-    print "      Once copied, you can setup your fileset in files.f"
-    print ""
+    print("")
+    print("INFO: Unit test template for %s generated in: %s" % (instance["name"], instance["name"] + "_unit_test.sv"))
+    print("")
+    print("      To launch SVUT, don't forget to setup its environment variable. For instance:")
+    print("")
+    print("      export SVUT=\"$HOME/.svut\"")
+    print("      export PATH=$SVUT:$PATH")
+    print("")
+    print("      You can find a Makefile example to launch your unit test in your SVUT install folder")
+    print("")
+    print("      cp $SVUT/Makefile.example ./Makefile")
+    print("")
+    print("      Once copied, you can setup your fileset in files.f")
+    print("")
 
     os.system("touch files.f")
