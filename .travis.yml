@@ -2,10 +2,13 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 before_install:
   - sudo apt-get update
   - sudo apt-get install iverilog
 script:
     - iverilog -V
     - bash test/lint.sh
-      #    - cd test && bash regression.sh
+      #- cd test && bash regression.sh
