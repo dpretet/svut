@@ -146,3 +146,4 @@ GTKWave should open up without problems :)
 # TODO
 
 - [ ] Add [Verilator](https://www.veripool.org/wiki/verilator) support
+- [X] Add JUnit-style macros, including optional names on tests and test suites.

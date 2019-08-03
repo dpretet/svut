@@ -90,5 +90,12 @@ ENV/
 
 # Editing
 .vscode
+
+# Ctags
 tags
 .tags
+
+# Testing artifacts
+a.out
+dump.vcd
+test/regression.txt
