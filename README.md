@@ -26,7 +26,14 @@ and add SVUT to $PATH:
     export SVUT=$HOME/.svut
     export PATH=$SVUT:$PATH
 
+SVUT relies on [Icarus Verilog](http://iverilog.icarus.com/) as simulation back-end.
+Please install it with your favourite package manager and be sure to use
+a version greater or equal to v10.2. SVUT is tested with v10.2 and cannot work with
+with lower version (<= v9.x).
+
+
 ### How to use it
+
 
 To create a unit test of a verilog module, call the command:
 
