@@ -1,0 +1,11 @@
+# SVUT has been originally created in 2017 to provide an easy way to create
+# testbenchs for Verilog and SystemVerilog development. It's licensed
+# under MIT licence, a very permissive license for reuse and compatibility
+# with other licenses.
+#
+# This does not necessarily list everyone who has contributed code, since in
+# some cases, their employer may be the copyright holder.  To see the full list
+# of contributors, see the revision history in source control.
+
+    Damien Pretet <damien.pretet@me.com>
+    Sarah ... <sarah@google.com>
