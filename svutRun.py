@@ -53,7 +53,9 @@ def create_iverilog(args, test):
     """
     Create the Icarus Verilog command to launch the simulation
     """
-    cmds = []
+    # Remove the compiled file if it exists. That ensures that a compilation error
+    # won't run an obsolete test instead
+    cmds = ["rm -f a.out"]
     cmd = "iverilog -g2012 "
 
     if args.dotfile:
