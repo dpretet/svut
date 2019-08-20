@@ -53,8 +53,8 @@
     integer svut_error_total = 0; \
     integer svut_nb_test = 0; \
     integer svut_nb_test_success = 0; \
-    string test_name = ""; \
-    string suite_name = "";
+    string svut_test_name = ""; \
+    string svut_suite_name = "";
 `endif
 
 `ifndef LAST_STATUS
@@ -133,7 +133,7 @@
     begin \
         $display("\033[0;34mTESTING:  [%g] %s\033[0m", $time, name); \
         setup(); \
-        test_name = name; \
+        svut_test_name = name; \
         svut_error = 0; \
         svut_nb_test = svut_nb_test + 1;
 `endif
@@ -146,7 +146,7 @@
             svut_nb_test_success = svut_nb_test_success + 1; \
             `SUCCESS("Test successful\n"); \
         end else begin \
-            `ERROR("Test failed ", test_name); \
+            `ERROR("Test failed ", svut_test_name); \
             $display(""); \
             svut_error_total += svut_error; \
         end \
@@ -167,7 +167,7 @@
 `define TEST_SUITE(name, prefix="TEST_SUITE: ") \
     task run(); \
     begin \
-        suite_name = name; \
+        svut_suite_name = name; \
         $display("\n\033[0;36m%s %s execution started\033[0m\n", prefix, name);
 `endif
 
@@ -177,7 +177,7 @@
     endtask \
     initial begin\
         run(); \
-        $display("\n\033[0;36mTEST SUITE:  %s execution finished @ %g\033[0m\n", suite_name, $time); \
+        $display("\n\033[0;36mTEST SUITE:  %s execution finished @ %g\033[0m\n", svut_suite_name, $time); \
         if (svut_warning > 0) begin \
             $display("\t  -> \033[1;33mWarning number: %4d\033[0m", svut_warning); \
         end \
