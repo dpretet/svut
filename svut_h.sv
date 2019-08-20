@@ -18,29 +18,29 @@
 
 `ifndef INFO
 `define INFO(msg) \
-        $display("%c[0;37mINFO:     [%g] %s%c[0m", 27, $time, msg, 27)
+        $display("\033[0;37mINFO:     [%g] %s\033[0m", $time, msg)
 `endif
 
 `ifndef SUCCESS
 `define SUCCESS(msg) \
-        $display("%c[0;32mSUCCESS:  [%g] %s%c[0m", 27, $time, msg, 27)
+        $display("\033[0;32mSUCCESS:  [%g] %s\033[0m", $time, msg)
 `endif
 
 `ifndef WARNING
 `define WARNING(msg) \
-        $display("%c[1;33mWARNING:  [%g] %s%c[0m", 27, $time, msg, 27); \
+        $display("\033[1;33mWARNING:  [%g] %s\033[0m", $time, msg); \
         svut_warning += 1
 `endif
 
 `ifndef CRITICAL
 `define CRITICAL(msg) \
-        $display("%c[1;35mCRITICAL: [%g] %s%c[0m", 27, $time, msg, 27); \
+        $display("\033[1;35mCRITICAL: [%g] %s\033[0m", $time, msg); \
         svut_critical += 1
 `endif
 
 `ifndef ERROR
 `define ERROR(msg, msg2="", prefix="ERROR:   ") \
-        $display("%c[1;31m%s [%g] %s %s%c[0m", 27, prefix, $time, msg, msg2, 27); \
+        $display("\033[1;31m%s [%g] %s %s\033[0m", prefix, $time, msg, msg2); \
         svut_error += 1
 `endif
 
@@ -53,8 +53,8 @@
     integer svut_error_total = 0; \
     integer svut_nb_test = 0; \
     integer svut_nb_test_success = 0; \
-    string test_name = ""; \
-    string suite_name = "";
+    string svut_test_name = ""; \
+    string svut_suite_name = "";
 `endif
 
 `ifndef LAST_STATUS
@@ -131,9 +131,9 @@
 `ifndef NAMED_TEST
 `define NAMED_TEST(name="test") \
     begin \
-        $display("%c[0;34mTESTING:  [%g] %s%c[0m", 27, $time, name, 27); \
+        $display("\033[0;34mTESTING:  [%g] %s\033[0m", $time, name); \
         setup(); \
-        test_name = name; \
+        svut_test_name = name; \
         svut_error = 0; \
         svut_nb_test = svut_nb_test + 1;
 `endif
@@ -146,7 +146,7 @@
             svut_nb_test_success = svut_nb_test_success + 1; \
             `SUCCESS("Test successful\n"); \
         end else begin \
-            `ERROR("Test failed ", test_name); \
+            `ERROR("Test failed ", svut_test_name); \
             $display(""); \
             svut_error_total += svut_error; \
         end \
@@ -167,8 +167,8 @@
 `define TEST_SUITE(name, prefix="TEST_SUITE: ") \
     task run(); \
     begin \
-        suite_name = name; \
-        $display("\n%c[0;36m%s %s execution started%c[0m\n", 27, prefix, name, 27);
+        svut_suite_name = name; \
+        $display("\n\033[0;36m%s %s execution started\033[0m\n", prefix, name);
 `endif
 
 `ifndef TEST_SUITE_END
@@ -177,20 +177,20 @@
     endtask \
     initial begin\
         run(); \
-        $display("\n%c[0;36mTEST SUITE:  %s execution finished @ %g%c[0m\n", 27, suite_name, $time, 27); \
+        $display("\n\033[0;36mTEST SUITE:  %s execution finished @ %g\033[0m\n", svut_suite_name, $time); \
         if (svut_warning > 0) begin \
-            $display("\t  -> %c[1;33mWarning number: %4d%c[0m", 27, svut_warning, 27); \
+            $display("\t  -> \033[1;33mWarning number: %4d\033[0m", svut_warning); \
         end \
         if (svut_critical > 0) begin \
-            $display("\t  -> %c[1;35mCritical number: %4d%c[0m", 27, svut_critical, 27); \
+            $display("\t  -> \033[1;35mCritical number: %4d\033[0m", svut_critical); \
         end \
         if (svut_error_total > 0) begin \
-            $display("\t  -> %c[1;31mError number: %4d%c[0m", 27, svut_error_total, 27); \
+            $display("\t  -> \033[1;31mError number: %4d\033[0m", svut_error_total); \
         end \
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("\t  -> %c[1;31mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> \033[1;31mSTATUS: %4d / %4d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end else begin \
-            $display("\t  -> %c[0;32mSTATUS: %4d / %4d test(s) passed%c[0m\n", 27, svut_nb_test_success, svut_nb_test, 27); \
+            $display("\t  -> \033[0;32mSTATUS: %4d / %4d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end \
         $finish(); \
     end
