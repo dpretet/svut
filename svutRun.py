@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2019 The SVUT Authors
+Copyright 2020 The SVUT Authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -77,7 +77,7 @@ def create_iverilog(args, test):
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported extension. Mus use either *.v or *.sv")
+        print("ERROR: failed to find supported extension. Must use either *.v or *.sv")
         sys.exit(1)
 
     cmds.append(cmd)

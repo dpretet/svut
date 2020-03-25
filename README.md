@@ -162,7 +162,7 @@ GTKWave should open up without problems :)
 
 ## License
 
-Copyright 2019 The SVUT Authors
+Copyright 2020 The SVUT Authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
