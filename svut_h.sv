@@ -80,8 +80,7 @@
 ///       evaluation fails.
 
 /// This function is shared between assertions to format messages
-function string create_msg;
-    input string assertion, message;
+function string create_msg(input string assertion, message);
     if (message != "")
         create_msg = {message, " (", assertion, ")"};
     else

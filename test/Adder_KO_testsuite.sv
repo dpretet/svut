@@ -55,7 +55,7 @@ module Adder_unit_test_KO;
     end
     endtask
 
-    `UNIT_TESTS
+    `TEST_SUITE("")
 
         /* Available macros:
 
@@ -75,7 +75,7 @@ module Adder_unit_test_KO;
                - `LAST_STATUS: tied to 1 is last macros has been asserted, else tied to 0
         */
 
-    `UNIT_TEST(REGRESSION)
+    `UNIT_TEST("REGRESSION")
 
         `INFO("Start REGRESSION testuite");
 
@@ -101,7 +101,7 @@ module Adder_unit_test_KO;
 
     `UNIT_TEST_END
 
-    `UNIT_TESTS_END
+    `TEST_SUITE_END
 
 endmodule
 
