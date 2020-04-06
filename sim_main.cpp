@@ -1,4 +1,4 @@
-#include "obj_dir/Vffd_unit_test.h"
+#include "build/Vffd_unit_test.h"
 #include "verilated.h"
 
 // Current simulation time (64-bit unsigned)

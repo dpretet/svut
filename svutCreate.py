@@ -45,8 +45,9 @@ if __name__ == '__main__':
         print("ERROR: Can't find file %s to load..." % file_name)
         sys.exit(1)
 
-    # The next section will parse the user file and extract the parameters list,
-    # the IOs name and width and the module name. Expect Verilog 2005 style ONLY!
+    # The next section will parse the user file and extract the parameters
+    # list, the IOs name and width and the module name. Expect Verilog 2005
+    # style ONLY!
 
     # List of flags activated during parsing steps.
     intoComment = "No"
@@ -152,7 +153,8 @@ if __name__ == '__main__':
     utfile.write("""//`include \"""" + file_name + """\"\n\n""")
     utfile.write("""`timescale 1 ns / 1 ps\n""")
     utfile.write("""\n""")
-    utfile.write("""module """ + instance["name"] + "_unit_test;\n")
+    utfile.write("""module """ + instance["name"] +
+                 "_unit_test(input wire svut_aclk, svut_arstn);\n")
     utfile.write("""\n""")
     utfile.write("""    `SVUT_SETUP\n""")
     utfile.write("""\n""")
@@ -201,79 +203,91 @@ if __name__ == '__main__':
     utfile.write("""    );\n""")
 
     utfile.write("""\n""")
-    utfile.write("""    // An example to create a clock\n""")
-    utfile.write("""    // initial aclk = 0;\n""")
-    utfile.write("""    // always #2 aclk <= ~aclk;\n""")
+    utfile.write("""    /// An example to create a clock for icarus:\n""")
+    utfile.write("""    /// initial aclk = 0;\n""")
+    utfile.write("""    /// always #2 aclk <= ~aclk;\n""")
     utfile.write("""\n""")
-    utfile.write("""    // An example to dump data for visualization\n""")
-    utfile.write("""    // initial $dumpvars(0, %s);\n""" %
+    utfile.write("""    /// An example to create a clock for verilator,\n""")
+    utfile.write("""    /// svut_aclk is generated from C++:\n""")
+    utfile.write("""    /// assign aclk = svut_aclk;\n""")
+    utfile.write("""\n""")
+    utfile.write("""    /// An example to dump data for visualization\n""")
+    utfile.write("""    /// initial begin\n""")
+    utfile.write("""    ///     $dumpfile("waveform.vcd")\n""")
+    utfile.write("""    ///     $dumpvars(0, %s);\n""" %
                  (instance["name"] + "_unit_test"))
+    utfile.write("""    /// end\n""")
     utfile.write("""\n""")
     utfile.write("""    task setup();\n""")
     utfile.write("""    begin\n""")
-    utfile.write("""        // setup() runs when a test begins\n""")
+    utfile.write("""        /// setup() runs when a test begins\n""")
     utfile.write("""    end\n""")
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
     utfile.write("""    task teardown();\n""")
     utfile.write("""    begin\n""")
-    utfile.write("""        // teardown() runs when a test ends\n""")
+    utfile.write("""        /// teardown() runs when a test ends\n""")
     utfile.write("""    end\n""")
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
-    utfile.write("""    `UNIT_TESTS\n\n""")
-    utfile.write("""        /* Available macros:\n\n""")
-    utfile.write(
-        """               - `INFO("message"); Print a grey message\n""")
-    utfile.write(
-        """               - `SUCCESS("message"); Print a green message\n""")
-    utfile.write(
-        """               - `WARNING("message"); Print an orange message and increment warning counter\n""")
-    utfile.write(
-        """               - `CRITICAL("message"); Print an pink message and increment critical counter\n""")
-    utfile.write(
-        """               - `ERROR("message"); Print a red message and increment error counter\n""")
-    utfile.write(
-        """               - `FAIL_IF(aSignal); Increment error counter if evaluaton is positive\n""")
-    utfile.write(
-        """               - `FAIL_IF_NOT(aSignal); Increment error coutner if evaluation is false\n""")
-    utfile.write(
-        """               - `FAIL_IF_EQUAL(aSignal, 23); Increment error counter if evaluation is equal\n""")
-    utfile.write(
-        """               - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error counter if evaluation is not equal\n""")
-    utfile.write("""        */\n\n""")
-    utfile.write("""        /* Available flag:\n\n""")
-    utfile.write(
-        """               - `LAST_STATUS: tied to 1 is last macros has been asserted, else tied to 0 \n""")
-    utfile.write("""        */\n\n""")
-    utfile.write("""    `UNIT_TEST(TESTNAME)\n""")
+    utfile.write("""    `TEST_SUITE("FIRST_ONE")\n\n""")
     utfile.write("""\n""")
-    utfile.write("""        `INFO("Start TESTNAME");\n""")
+    utfile.write("""///    Available macros:"\n"""
+    utfile.write("""///"\n"""
+    utfile.write("""///     - `INFO("message"); Print a grey message"\n"""
+    utfile.write("""///     - `SUCCESS("message"); Print a green message"\n"""
+    utfile.write("""///     - `WARNING("message"); Print an orange message and \
+            increment "\n"""
+    utfile.write("""///       warning counter"\n"""
+    utfile.write("""///     - `CRITICAL("message"); Print an pink message and \
+            increment "\n"""
+    utfile.write("""///       critical counter"\n"""
+    utfile.write("""///     - `ERROR("message"); Print a red message and \
+        increment error "\n"""
+    utfile.write("""///       counter"\n"""
+    utfile.write("""///     - `FAIL_IF(aSignal); Increment error counter if \
+            evaluaton is "\n"""
+    utfile.write("""///       positive"\n"""
+    utfile.write("""///     - `FAIL_IF_NOT(aSignal); Increment error coutner \
+            if evaluation "\n"""
+    utfile.write("""///       is false"\n"""
+    utfile.write("""///     - `FAIL_IF_EQUAL(aSignal, 23); Increment error \
+            counter if "\n"""
+    utfile.write("""///       evaluation is equal"\n"""
+    utfile.write("""///     - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error\
+            counter if "\n"""
+    utfile.write("""///       evaluation is not equal"\n"""
+    utfile.write("""///"\n"""
+    utfile.write("""///    Available flag:"\n"""
+    utfile.write("""///"\n"""
+    utfile.write("""///     - `LAST_STATUS: tied to 1 is last macros did \
+            experienced "\n"""
+    utfile.write("""///       a failure, else tied to 0"\n"""
+    utfile.write("""    `UNIT_TEST("TESTNAME")\n""")
     utfile.write("""\n""")
-    utfile.write("""        // Describe here the testcase scenario\n""")
-    utfile.write("""\n""")
-    utfile.write("""        `INFO("Test finished");\n""")
+    utfile.write("""        /// Describe here the testcase scenario\n""")
     utfile.write("""\n""")
     utfile.write("""    `UNIT_TEST_END\n""")
     utfile.write("""\n""")
-    utfile.write("""    `UNIT_TESTS_END\n""")
+    utfile.write("""    `TEST_SUITE_END\n""")
     utfile.write("""\n""")
     utfile.write("""endmodule\n""")
-    utfile.write("""\n""")
     utfile.close()
 
-    # After the file is written and ready to use, print the terminal recommandation
-    # to call SVUT flow.
+    # After the file is written and ready to use, print some
+    # recommandation to setup and call SVUT flow.
     print("")
     print("INFO: Unit test template for %s generated in: %s" %
           (instance["name"], instance["name"] + "_unit_test.sv"))
     print("")
-    print("      To launch SVUT, don't forget to setup its environment variable. For instance:")
+    print("      To launch SVUT, don't forget to setup its environment variable\
+            . For instance:")
     print("")
     print("      export SVUT=\"$HOME/.svut\"")
     print("      export PATH=$SVUT:$PATH")
     print("")
-    print("      You can find a Makefile example to launch your unit test in your SVUT install folder")
+    print("      You can find a Makefile example to launch your unit test in \
+            your SVUT install folder")
     print("")
     print("      cp $SVUT/Makefile.example ./Makefile")
     print("")

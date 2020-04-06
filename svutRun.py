@@ -33,6 +33,7 @@ CURDIR = os.path.abspath(os.path.dirname(__file__))
 def find_unit_tests():
     """
     Parse all unit test files of the current folder
+    and return a list
     """
 
     supported_prefix = ["tb_"]
@@ -49,6 +50,8 @@ def find_unit_tests():
             for prefix in supported_prefix:
                 if _file.startswith(prefix):
                     files.append(_file)
+    # Remove duplicated file if contains both prefix and suffix
+    files = list(set(files))
     return files
 
 
@@ -80,7 +83,8 @@ def create_iverilog(args, test):
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported extension. Must use either *.v or *.sv")
+        print("ERROR: failed to find supported extension. \
+                Must use either *.v or *.sv")
         sys.exit(1)
 
     cmds.append(cmd)
@@ -104,48 +108,58 @@ def create_verilator(args, test):
     Create the Verilator command to launch the simulation
     """
 
-    cmds = ["rm -fr obj_dir"]
-    cmds = ["""verilator -Wall --trace
-        +1800-2017ext+sv
-        +1800-2005ext+v
-        -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN --exe sim_main.cpp"""]
+    testname = test.split(".")[0]
+    cmds = ["rm -fr build"]
+    # build compilation command
+    cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
+    cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN """
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported extension. Must use either *.v or *.sv")
+        print("ERROR: failed to find supported extension. \
+                Must use either *.v or *.sv")
         sys.exit(1)
 
-    cmd = "--cc " + test
+    cmd += "--cc " + test + " --exe sim_main.cpp"
     cmds.append(cmd)
 
-    return cmd
+    # Build execution command
+    cmd = "make -j -C build -f V" + testname + ".mk V" + testname
+    cmds.append(cmd)
+    cmd = "build/V" + testname
+    cmds.append(cmd)
+
+    return cmds
 
 
 if __name__ == '__main__':
 
     PARSER = argparse.ArgumentParser(
-        description='ThotIP Unit test runner v1.0')
+        description='SVUT v1.4')
 
-    PARSER.add_argument('-test', dest='test', type=str, default="all", nargs="*",
-                        help='Unit test to run. Can be a file or a list of files')
+    PARSER.add_argument('-test', dest='test', type=str,
+                        default="all", nargs="*",
+                        help='Unit test to run. A file or a list of files')
 
-    PARSER.add_argument('-f', dest='dotfile', type=str, default=["files.f"], nargs="*",
-                        help="A dot file (*.f) to load with incdir, define and fileset")
+    PARSER.add_argument('-f', dest='dotfile', type=str, default=["files.f"],
+                        nargs="*",
+                        help="A dot file (*.f) with incdir, define and files")
 
     PARSER.add_argument('-sim', dest='simulator', type=str,
                         default="icarus",
-                        help='The simulator to use. Can be Icarus Verilog only. Verilator planned.')
+                        help='The simulator to use.')
 
     PARSER.add_argument('-gui', dest='gui',
                         action='store_true',
-                        help='Active the lxt dump and open GTKWave when simulation ends')
+                        help='Active the lxt dump and open GTKWave')
 
     PARSER.add_argument('-dry-run', dest='dry',
                         action='store_true',
-                        help='Just print the command, don\'t execute. For debug purpose')
+                        help='Just print the command, don\'t execute. \
+                                For debug purpose only.')
 
     PARSER.add_argument('-I', dest='include', type=str, nargs="*",
-                        default="", help='An include folder')
+                        default="", help='Specify an include folder')
 
     ARGS = PARSER.parse_args()
 
@@ -175,6 +189,7 @@ if __name__ == '__main__':
         for CMD in CMDS:
 
             if ARGS.dry:
+                print(CMDS)
                 cmdret = 0
             else:
                 cmdret = os.system(CMD)

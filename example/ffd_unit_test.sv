@@ -34,22 +34,14 @@ module ffd_unit_test(input wire svut_aclk, svut_arstn);
     // initial aclk = 0;
     // initial arstn = 0;
     // always #2 aclk <= ~aclk;
-    
+
     // Example to grab clock/reset generated with Verilator C++
     assign aclk = svut_aclk;
-    // assign arstn = svut_arstn;
+    assign arstn = svut_arstn;
     integer i = 0;
 
     task setup();
     begin
-        @ (posedge svut_aclk);
-        i = 0;
-        assign arstn = 1'b0;
-        d = 1'b0;
-        while (i<5) begin
-            i++;
-        end
-        assign arstn = 1'b1;
     end
     endtask
 
@@ -63,24 +55,24 @@ module ffd_unit_test(input wire svut_aclk, svut_arstn);
     ///
     ///     - `INFO("message"); Print a grey message
     ///     - `SUCCESS("message"); Print a green message
-    ///     - `WARNING("message"); Print an orange message and increment 
+    ///     - `WARNING("message"); Print an orange message and increment
     ///       warning counter
-    ///     - `CRITICAL("message"); Print an pink message and increment 
+    ///     - `CRITICAL("message"); Print an pink message and increment
     ///       critical counter
-    ///     - `ERROR("message"); Print a red message and increment error 
+    ///     - `ERROR("message"); Print a red message and increment error
     ///       counter
-    ///     - `FAIL_IF(aSignal); Increment error counter if evaluaton is 
+    ///     - `FAIL_IF(aSignal); Increment error counter if evaluaton is
     ///       positive
-    ///     - `FAIL_IF_NOT(aSignal); Increment error coutner if evaluation 
+    ///     - `FAIL_IF_NOT(aSignal); Increment error coutner if evaluation
     ///       is false
-    ///     - `FAIL_IF_EQUAL(aSignal, 23); Increment error counter if 
+    ///     - `FAIL_IF_EQUAL(aSignal, 23); Increment error counter if
     ///       evaluation is equal
-    ///     - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error counter if 
+    ///     - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error counter if
     ///       evaluation is not equal
     ///
     ///    Available flag:
     ///
-    ///     - `LAST_STATUS: tied to 1 is last macros did experienced 
+    ///     - `LAST_STATUS: tied to 1 is last macros did experienced
     ///       a failure, else tied to 0
 
     `TEST_SUITE("RESET TestSuite")
@@ -88,8 +80,8 @@ module ffd_unit_test(input wire svut_aclk, svut_arstn);
     `UNIT_TEST("IS_RESET_WELL_APPPLIED")
 
         `INFO("I will test if q output is 0 after reset");
-        `FAIL_IF(q);
-        `INFO("q is 0 after reset!");
+        `FAIL_IF(q, "this flip-flop should be zeroed after reset");
+        `ASSERT(q==1, "this flip-flop should be zeroed after reset");
 
     `UNIT_TEST_END
 
