@@ -42,12 +42,13 @@ module ffd_unit_test(input wire svut_aclk, svut_arstn);
 
     task setup();
     begin
+        // setup() runs when a test begins, called by UNIT_TEST
     end
     endtask
 
     task teardown();
     begin
-        // teardown() runs when a test ends
+        // teardown() runs when a test ends, called by UNIT_TEST_END
     end
     endtask
 

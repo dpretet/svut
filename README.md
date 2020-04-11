@@ -32,10 +32,7 @@ and add SVUT to `$PATH`:
 SVUT relies on [Icarus Verilog](http://iverilog.icarus.com/) as simulation
 back-end.  Please install it with your favourite package manager and be sure to
 use a version greater or equal to v10.2. SVUT is tested with `v10.2` and cannot
-work with with lower version (`<= v9.x`). SVUT  can also relies on
-[Verilator](https://www.veripool.org/wiki/verilator). As for Icarus, please
-install it with your package manager and be sure to use a recent version. SVUT
-is tested with Verilator `v4.0.30`.
+work with with lower version (`<= v9.x`).
 
 
 ### How to use it
@@ -48,9 +45,9 @@ To create a unit test of a verilog module, call the command:
 ```
 
 SVUT will create "your_file_unit_test.sv" which contains your module
-instanciated and a place to write your testcase(s). Some codes are also commented
-to describe the different macros and how to create a clock or dump a VCD for GTKWave.
-To run a test, call the command:
+instanciated and a place to write your testcase(s). Some codes are also
+commented to describe the different macros and how to create a clock or dump a
+VCD for GTKWave.  To run a test, call the command:
 
 ```bash
     svutRun -test your_file_unit_test.sv
@@ -62,8 +59,8 @@ or simply
     svutRun
 ```
 
-SVUT will scan your current folder, search for the files with "_unit_test.sv" suffix
-and run all tests available.
+SVUT will scan your current folder, search for the files with "_unit_test.sv"
+suffix and run all tests available.
 
 # Example
 
@@ -94,21 +91,24 @@ Then run:
     svutCreate ffd.v
 ```
 
-ffd_unit_test.v has been dropped in the folder from you called svutCreate. It contains all you need
-to start populating your testcases. In the header, you can include directly your DUT file (uncomment):
+ffd_unit_test.v has been dropped in the folder from you called svutCreate. It
+contains all you need to start populating your testcases. In the header, you
+can include directly your DUT file (uncomment):
 
 ```verilog
     `include "ffd.v"
 ```
 
-or you can store the path to your file into a `files.f` file, automatically recognized by SVUT.
-Populate it with the files describing your IP. You can also specify include folder in this way:
+or you can store the path to your file into a `files.f` file, automatically
+recognized by SVUT.  Populate it with the files describing your IP. You can
+also specify include folder in this way:
 
 ```bash
     +incdir+$HOME/path/to/include/
 ```
 
-Right after the module instance, you can use the example to generate a clock (uncomment):
+Right after the module instance, you can use the example to generate a clock
+(uncomment):
 
 ```verilog
     initial aclk = 0;
@@ -150,7 +150,8 @@ A testsuite, comprising several `UNIT_TEST` is declared with another define:
     `TEST_SUITE_END
 ```
 
-To test the FFD, add the next line into setup() to drive the reset and init the FFD input:
+To test the FFD, add the next line into setup() to drive the reset and init the
+FFD input:
 
 ```verilog
     arstn = 1'b0;
@@ -165,8 +166,8 @@ and into the testcase:
     `FAIL_IF(q);
 ```
 
-Here is a basic unit test checking if the FFD output is 0 after reset. Once called `svutRun` in your
-shell, you should see something similar:
+Here is a basic unit test checking if the FFD output is 0 after reset. Once
+called `svutRun` in your shell, you should see something similar:
 
 ```
     INFO:     Testsuite execution started
@@ -180,15 +181,16 @@ shell, you should see something similar:
           -> STATUS:    1 /    1 test(s) passed
 ```
 
-Now you know the basics of SVUT. The \*_unit_test.sv provides prototypes of available macros.
-Try them and play around to test SVUT. You can find these files into the example folder.
-A simple makefile.example is present at the root level of this repo to launch the flow. It contains
-two targets, `make test` and `make gui`. Enjoy!
+Now you know the basics of SVUT. The \*_unit_test.sv provides prototypes of
+available macros.  Try them and play around to test SVUT. You can find these
+files into the example folder.  A simple makefile.example is present at the
+root level of this repo to launch the flow. It contains two targets, `make
+test` and `make gui`. Enjoy!
 
 ## External tools
 
-To use `make gui` command, opening by default GTKwave, be sure to setup properly this tool in your path.
-For Mac OS users, first install with brew:
+To use `make gui` command, opening by default GTKwave, be sure to setup
+properly this tool in your path.  For Mac OS users, first install with brew:
 
 ```bash
     brew cask install gtkwave
@@ -200,8 +202,8 @@ Then setup your path to launch `gtkwave` from your shell (restart it)
     export PATH="/Applications/gtkwave.app/Contents/Resources/bin/":$PATH
 ```
 
-You may need to install a Perl module, Switch. First enter in cpan (juste type cpan in your shell,
-or sudo cpan), then:
+You may need to install a Perl module, Switch. First enter in cpan (juste type
+cpan in your shell, or sudo cpan), then:
 
 ```bash
     install Switch
@@ -214,18 +216,20 @@ GTKWave should open up without problems :)
 
 Copyright 2020 The SVUT Authors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge, publish, distribute,
-sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-imitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.  imitations under the License.
