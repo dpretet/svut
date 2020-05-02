@@ -183,7 +183,6 @@ if __name__ == '__main__':
 
         # First copy macro in the user folder
         os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
-        os.system("cp " + CURDIR + "/sim_main.cpp " + os.getcwd())
 
         # The execute all commands
         for CMD in CMDS:
