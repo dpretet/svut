@@ -26,8 +26,9 @@ SOFTWARE.
 import os
 import sys
 import argparse
+import filecmp
 
-CURDIR = os.path.abspath(os.path.dirname(__file__))
+SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 def find_unit_tests():
@@ -134,8 +135,7 @@ def create_verilator(args, test):
 
 if __name__ == '__main__':
 
-    PARSER = argparse.ArgumentParser(
-        description='SVUT v1.4')
+    PARSER = argparse.ArgumentParser(description='SystemVerilog Unit Test')
 
     PARSER.add_argument('-test', dest='test', type=str,
                         default="all", nargs="*",
@@ -181,8 +181,14 @@ if __name__ == '__main__':
             print("ERROR: Simulator not supported. Icarus is the only option")
             sys.exit(1)
 
-        # First copy macro in the user folder
-        os.system("cp " + CURDIR + "/svut_h.sv " + os.getcwd())
+        org_hfile = SCRIPTDIR + "/svut_h.sv"
+        curr_hfile = os.getcwd() + "/svut_h.sv"
+
+        if (not os.path.isfile(curr_hfile)) or\
+                (not filecmp.cmp(curr_hfile, org_hfile)):
+            # First copy macro in the user folder
+            print("INFO: Copy newer version of svut_h.sv")
+            os.system("cp " + org_hfile + " " + os.getcwd())
 
         # The execute all commands
         for CMD in CMDS:
@@ -194,8 +200,5 @@ if __name__ == '__main__':
                 cmdret = os.system(CMD)
                 if cmdret:
                     print("ERROR: testsuite execution failed")
-
-        os.system("rm -f " + os.getcwd() + "/svut_h.sv")
-        os.system("rm -f " + os.getcwd() + "/sim_main.cpp")
 
     sys.exit(0)
