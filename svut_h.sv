@@ -136,7 +136,7 @@ endfunction
 
 /// This header must be placed to start a test suite execution
 `define TEST_SUITE(name="") \
-    task run(); \
+    task run(msg=""); \
     begin \
         svut_suite_name = name; \
         svut_msg = {"Start testsuite ", name}; \
@@ -173,18 +173,18 @@ endfunction
         svut_msg = {"Stop testsuite ", svut_suite_name}; \
         `INFO(svut_msg); \
         if (svut_warning > 0) begin \
-            $display("\t-> \033[1;33mWarning number: %0d\033[0m", svut_warning); \
+            $display("\t\033[1;33m- Warning number: %0d\033[0m", svut_warning); \
         end \
         if (svut_critical > 0) begin \
-            $display("\t-> \033[1;35mCritical number: %0d\033[0m", svut_critical); \
+            $display("\t\033[1;35m- Critical number: %0d\033[0m", svut_critical); \
         end \
         if (svut_error_total > 0) begin \
-            $display("\t-> \033[1;31mError number: %0d\033[0m", svut_error_total); \
+            $display("\t\033[1;31m- Error number: %0d\033[0m", svut_error_total); \
         end \
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("\t-> \033[1;31mSTATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
+            $display("\t\033[1;31m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end else begin \
-            $display("\t-> \033[0;32mSTATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
+            $display("\t\033[0;32m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end \
         $finish(); \
     end

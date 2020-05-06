@@ -1,11 +1,11 @@
 # SystemVerilog Unit Test (SVUT)
 
-[![GitHub license](https://img.shields.io/github/license/damofthemoon/svut)](https://github.com/damofthemoon/svut/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/damofthemoon/svut.svg?branch=master)](https://travis-ci.org/damofthemoon/svut)
-[![GitHub issues](https://img.shields.io/github/issues/damofthemoon/svut)](https://github.com/damofthemoon/svut/issues)
-[![GitHub stars](https://img.shields.io/github/stars/damofthemoon/svut)](https://github.com/damofthemoon/svut/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/damofthemoon/svut)](https://github.com/damofthemoon/svut/network)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/damofthemoon/svut?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fdamofthemoon%2Fsvut)
+[![GitHub license](https://img.shields.io/github/license/dpretet/svut)](https://github.com/dpretet/svut/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/dpretet/svut.svg?branch=master)](https://travis-ci.org/dpretet/svut)
+[![GitHub issues](https://img.shields.io/github/issues/dpretet/svut)](https://github.com/dpretet/svut/issues)
+[![GitHub stars](https://img.shields.io/github/stars/dpretet/svut)](https://github.com/dpretet/svut/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/dpretet/svut)](https://github.com/dpretet/svut/network)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/dpretet/svut?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fdpretet%2Fsvut)
 
 
 ## Introduction
@@ -24,7 +24,7 @@ Git clone the repository in a path. Set up the SVUT environment variable
 and add SVUT to `$PATH`:
 
 ```bash
-    git clone git@github.com:damofthemoon/svut.git $HOME/.svut
+    git clone git@github.com:dpretet/svut.git $HOME/.svut
     export SVUT=$HOME/.svut
     export PATH=$SVUT:$PATH
 ```
