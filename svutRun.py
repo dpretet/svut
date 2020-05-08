@@ -34,12 +34,14 @@ SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
 def find_unit_tests():
     """
     Parse all unit test files of the current folder
-    and return a list
+    and return a list of available tests
     """
 
-    supported_prefix = ["tb_"]
-    supported_suffix = ["unit_test.sv", "unit_test.v",
-                        "testsuite.v", "testsuite.sv", "_tb.v", "_tb.sv"]
+    supported_prefix = ["tb_", "ts_", "testbench_", "testsuite_", "unit_test_"]
+    supported_suffix = ["_unit_test.v", "_unit_test.sv",
+                        "_testbench.v", "_testbench.sv",
+                        "_testsuite.v", "_testsuite.sv",
+                        "_tb.v", "_tb.sv", "_ts.v", "_ts.sv"]
     files = []
     # Parse the current folder
     for _file in os.listdir(os.getcwd()):
@@ -63,7 +65,7 @@ def create_iverilog(args, test):
     # Remove the compiled file if it exists. That ensures that a compilation
     # won't run an obsolete test.
     cmds = ["rm -f a.out"]
-    cmd = "iverilog -g2012 "
+    cmd = "iverilog -g2012 -Wall "
 
     if args.dotfile:
 
@@ -85,7 +87,7 @@ def create_iverilog(args, test):
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
         print("ERROR: failed to find supported extension. \
-                Must use either *.v or *.sv")
+               Must use either *.v or *.sv")
         sys.exit(1)
 
     cmds.append(cmd)
@@ -118,7 +120,7 @@ def create_verilator(args, test):
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
         print("ERROR: failed to find supported extension. \
-                Must use either *.v or *.sv")
+               Must use either *.v or *.sv")
         sys.exit(1)
 
     cmd += "--cc " + test + " --exe sim_main.cpp"

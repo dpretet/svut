@@ -144,7 +144,7 @@ if __name__ == '__main__':
     # extracted. Give also example to use the macro, create a clock,
     # dump signals in a waveform and skeleton of the testsuite.
 
-    utfile = open(instance["name"] + "_unit_test.sv", "w")
+    utfile = open(instance["name"] + "_testbench.sv", "w")
 
     utfile.write("// Mandatory file to be able to launch SVUT flow\n")
     utfile.write("`include \"svut_h.sv\"\n\n")
