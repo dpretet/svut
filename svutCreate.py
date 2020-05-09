@@ -146,15 +146,13 @@ if __name__ == '__main__':
 
     utfile = open(instance["name"] + "_testbench.sv", "w")
 
-    utfile.write("// Mandatory file to be able to launch SVUT flow\n")
+    utfile.write("/// Mandatory file to be able to launch SVUT flow\n")
     utfile.write("`include \"svut_h.sv\"\n\n")
-    utfile.write(
-        "// Specify here the module to load or setup the path in files.f\n")
-    utfile.write("""//`include \"""" + file_name + """\"\n\n""")
-    utfile.write("""`timescale 1 ns / 1 ps\n""")
+    utfile.write("/// Specify here the module to load or setup the path in files.f\n")
+    utfile.write("""`include \"""" + file_name + """\"\n\n""")
+    utfile.write("""`timescale 1 ns / 100 ps\n""")
     utfile.write("""\n""")
-    utfile.write("""module """ + instance["name"] +
-                 "_unit_test(input wire svut_aclk, svut_arstn);\n")
+    utfile.write("""module """ + instance["name"] + "_testbench();\n")
     utfile.write("""\n""")
     utfile.write("""    `SVUT_SETUP\n""")
     utfile.write("""\n""")
@@ -207,15 +205,10 @@ if __name__ == '__main__':
     utfile.write("""    /// initial aclk = 0;\n""")
     utfile.write("""    /// always #2 aclk <= ~aclk;\n""")
     utfile.write("""\n""")
-    utfile.write("""    /// An example to create a clock for verilator,\n""")
-    utfile.write("""    /// svut_aclk is generated from C++:\n""")
-    utfile.write("""    /// assign aclk = svut_aclk;\n""")
-    utfile.write("""\n""")
     utfile.write("""    /// An example to dump data for visualization\n""")
     utfile.write("""    /// initial begin\n""")
-    utfile.write("""    ///     $dumpfile("waveform.vcd")\n""")
-    utfile.write("""    ///     $dumpvars(0, %s);\n""" %
-                 (instance["name"] + "_unit_test"))
+    utfile.write("""    ///     $dumpfile("waveform.vcd");\n""")
+    utfile.write("""    ///     $dumpvars(0, %s);\n""" % (instance["name"] + "_testbench"))
     utfile.write("""    /// end\n""")
     utfile.write("""\n""")
     utfile.write("""    task setup(msg="");\n""")
@@ -230,39 +223,27 @@ if __name__ == '__main__':
     utfile.write("""    end\n""")
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
-    utfile.write("""    `TEST_SUITE("FIRST_ONE")\n\n""")
+    utfile.write("""    `TEST_SUITE("FIRST_ONE")\n""")
     utfile.write("""\n""")
-    utfile.write("""///    Available macros:"\n"""
-    utfile.write("""///"\n"""
-    utfile.write("""///     - `INFO("message"); Print a grey message"\n"""
-    utfile.write("""///     - `SUCCESS("message"); Print a green message"\n"""
-    utfile.write("""///     - `WARNING("message"); Print an orange message and \
-            increment "\n"""
-    utfile.write("""///       warning counter"\n"""
-    utfile.write("""///     - `CRITICAL("message"); Print an pink message and \
-            increment "\n"""
-    utfile.write("""///       critical counter"\n"""
-    utfile.write("""///     - `ERROR("message"); Print a red message and \
-        increment error "\n"""
-    utfile.write("""///       counter"\n"""
-    utfile.write("""///     - `FAIL_IF(aSignal); Increment error counter if \
-            evaluaton is "\n"""
-    utfile.write("""///       positive"\n"""
-    utfile.write("""///     - `FAIL_IF_NOT(aSignal); Increment error coutner \
-            if evaluation "\n"""
-    utfile.write("""///       is false"\n"""
-    utfile.write("""///     - `FAIL_IF_EQUAL(aSignal, 23); Increment error \
-            counter if "\n"""
-    utfile.write("""///       evaluation is equal"\n"""
-    utfile.write("""///     - `FAIL_IF_NOT_EQUAL(aSignal, 45); Increment error\
-            counter if "\n"""
-    utfile.write("""///       evaluation is not equal"\n"""
-    utfile.write("""///"\n"""
-    utfile.write("""///    Available flag:"\n"""
-    utfile.write("""///"\n"""
-    utfile.write("""///     - `LAST_STATUS: tied to 1 is last macros did \
-            experienced "\n"""
-    utfile.write("""///       a failure, else tied to 0"\n"""
+    utfile.write("""    ///    Available macros:"\n""")
+    utfile.write("""    ///\n""")
+    utfile.write("""    ///    - `INFO("message"):      Print a grey message\n""")
+    utfile.write("""    ///    - `SUCCESS("message"):   Print a green message\n""")
+    utfile.write("""    ///    - `WARNING("message"):   Print an orange message and increment warning counter\n""")
+    utfile.write("""    ///    - `CRITICAL("message"):  Print an pink message and increment critical counter\n""")
+    utfile.write("""    ///    - `ERROR("message"):     Print a red message and increment error counter\n""")
+    utfile.write("""    ///\n""")
+    utfile.write("""    ///    - `FAIL_IF(aSignal):                 Increment error counter if evaluaton is true\n""")
+    utfile.write("""    ///    - `FAIL_IF_NOT(aSignal):             Increment error coutner if evaluation is false\n""")
+    utfile.write("""    ///    - `FAIL_IF_EQUAL(aSignal, 23):       Increment error counter if evaluation is equal\n""")
+    utfile.write("""    ///    - `FAIL_IF_NOT_EQUAL(aSignal, 45):   Increment error counter if evaluation is not equal\n""")
+    utfile.write("""    ///    - `ASSERT(aSignal):                  Increment error counter if evaluation is not true\n""")
+    utfile.write("""    ///    - `ASSERT((aSignal == 0)):           Increment error counter if evaluation is not true\n""")
+    utfile.write("""    ///\n""")
+    utfile.write("""    ///    Available flag:\n""")
+    utfile.write("""    ///\n""")
+    utfile.write("""    ///    - `LAST_STATUS: tied to 1 is last macro did experience a failure, else tied to 0\n""")
+    utfile.write("""\n""")
     utfile.write("""    `UNIT_TEST("TESTNAME")\n""")
     utfile.write("""\n""")
     utfile.write("""        /// Describe here the testcase scenario\n""")
@@ -277,17 +258,14 @@ if __name__ == '__main__':
     # After the file is written and ready to use, print some
     # recommandation to setup and call SVUT flow.
     print("")
-    print("INFO: Unit test template for %s generated in: %s" %
-          (instance["name"], instance["name"] + "_unit_test.sv"))
+    print("INFO: Unit test template for %s generated in: %s" % (instance["name"], instance["name"] + "_testbench.sv"))
     print("")
-    print("      To launch SVUT, don't forget to setup its environment variable\
-            . For instance:")
+    print("      To launch SVUT, don't forget to setup its environment variable. For instance:")
     print("")
     print("      export SVUT=\"$HOME/.svut\"")
     print("      export PATH=$SVUT:$PATH")
     print("")
-    print("      You can find a Makefile example to launch your unit test in \
-            your SVUT install folder")
+    print("      You can find a Makefile example to launch your unit test in your SVUT install folder")
     print("")
     print("      cp $SVUT/Makefile.example ./Makefile")
     print("")

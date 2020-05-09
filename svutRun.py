@@ -106,7 +106,7 @@ def create_iverilog(args, test):
     return cmds
 
 
-def create_verilator(args, test):
+def create_verilator(test):
     """
     Create the Verilator command to launch the simulation
     """
@@ -177,7 +177,7 @@ if __name__ == '__main__':
             CMDS = create_iverilog(ARGS, tests)
 
         elif "verilator" in ARGS.simulator:
-            CMDS = create_verilator(ARGS, tests)
+            CMDS = create_verilator(tests)
 
         else:
             print("ERROR: Simulator not supported. Icarus is the only option")
