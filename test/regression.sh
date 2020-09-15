@@ -9,21 +9,19 @@ set -o pipefail
 
 # First testsuite running over the adder, supposed to be successful
 
-echo "INFO: Start Adder OK testsuite"
 "$DIR/../svutRun" -test "Adder_OK_testsuite.sv" | tee log
 ret=$?
 
 if [[ $ret != 0 ]]; then
-    echo "Execution failed"
+    echo "Execution failed but should not..."
     exit 1
 else
-    echo "Execution completed successfully"
+    echo "OK testsuite execution completed successfully ^^"
 fi
 
 
 # Second testsuite running over the adder, supposed to fail
 
-echo "INFO: Start Adder KO testsuite"
 "$DIR/../svutRun" -test "Adder_KO_testsuite.sv" | tee log
 ret=$?
 
@@ -33,13 +31,15 @@ ec=$(grep -c "ERROR:" log)
 
 if [[ $ret == 0 ]]; then
     if [[ $ec != "$error_num" ]]; then
-        echo "Execution suffered $ec issues but not $error_num as expected"
+        echo "Execution suffered $ec issues but not $error_num as expected ! "
         exit 1
+    else
+        echo "KO testsuite execution completed successfully ^^"
     fi
 else
-    echo "No errors detected while several exepected"
+    echo "No errors detected while several exepected..."
     exit 1
 fi
 
-echo "Regression finished successfully"
+echo "Regression finished successfully. SVUT sounds alive ^^"
 exit 0

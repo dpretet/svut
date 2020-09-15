@@ -38,7 +38,7 @@ module Adder_unit_test_OK;
     // An example to dump data for visualization
     initial $dumpvars(0, Adder_unit_test_OK);
 
-    task setup();
+    task setup(msg="Here is the setup function");
     begin
         // setup() runs when a test begins
         inc = 1'b0;
@@ -49,13 +49,13 @@ module Adder_unit_test_OK;
     end
     endtask
 
-    task teardown();
+    task teardown(msg="Here is the teardown function");
     begin
         // teardown() runs when a test ends
     end
     endtask
 
-    `TEST_SUITE("")
+    `TEST_SUITE("This is my OK Testsuite")
 
         /* Available macros:
 
@@ -77,8 +77,8 @@ module Adder_unit_test_OK;
 
     `UNIT_TEST("REGRESSION")
 
-        `INFO("Start REGRESSION testuite");
-
+        `MSG("I print a message for myself in the future");
+        `SUCCESS("All tests are expected OK!");
         // Basic tests of the main functions. All results are expected OK
         `INFO("Test FAIL_IF");
         `FAIL_IF(inc);

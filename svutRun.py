@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -189,18 +189,24 @@ if __name__ == '__main__':
         if (not os.path.isfile(curr_hfile)) or\
                 (not filecmp.cmp(curr_hfile, org_hfile)):
             # First copy macro in the user folder
-            print("INFO: Copy newer version of svut_h.sv")
+            print("INFO: Copy newest version of svut_h.sv")
             os.system("cp " + org_hfile + " " + os.getcwd())
 
         # The execute all commands
-        for CMD in CMDS:
+        print("")
+        print("--------")
+        print("< SVUT >")
+        print("--------")
 
+        for CMD in CMDS:
             if ARGS.dry:
-                print(CMDS)
-                cmdret = 0
+                print(CMD, flush=True)
+                sys.exit(0)
             else:
+                print(CMD, flush=True)
                 cmdret = os.system(CMD)
                 if cmdret:
                     print("ERROR: testsuite execution failed")
+        print("")
 
     sys.exit(0)

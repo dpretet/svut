@@ -38,7 +38,7 @@ module Adder_unit_test_KO;
     // An example to dump data for visualization
     initial $dumpvars(0, Adder_unit_test_KO);
 
-    task setup();
+    task setup(msg="Here is the setup function");
     begin
         // setup() runs when a test begins
         inc = 1'b0;
@@ -49,13 +49,13 @@ module Adder_unit_test_KO;
     end
     endtask
 
-    task teardown();
+    task teardown(msg="Here is the teardown function");
     begin
         // teardown() runs when a test ends
     end
     endtask
 
-    `TEST_SUITE("")
+    `TEST_SUITE("This is my KO Testsuite")
 
         /* Available macros:
 
@@ -77,10 +77,9 @@ module Adder_unit_test_KO;
 
     `UNIT_TEST("REGRESSION")
 
-        `INFO("Start REGRESSION testuite");
+        `MSG("I print a message for myself in the future\nThis message can span several line\nif I insert new line");
 
         // Basic tests of the main functions. All results are expected KO
-        `WARNING("Start to launch KO testsuite");
         `CRITICAL("All tests are expected KO");
         `INFO("Test FAIL_IF_NOT");
         `FAIL_IF_NOT(inc);
