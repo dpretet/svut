@@ -65,7 +65,7 @@ def create_iverilog(args, test):
     # Remove the compiled file if it exists. That ensures that a compilation
     # won't run an obsolete test.
     cmds = ["rm -f a.out"]
-    cmd = "iverilog -g2012 -Wall "
+    cmd = "iverilog -g2012 -Wall -o icarus.out "
 
     if args.dotfile:
 
@@ -92,7 +92,7 @@ def create_iverilog(args, test):
 
     cmds.append(cmd)
 
-    cmd = "vvp a.out "
+    cmd = "vvp icarus.out "
     if args.gui:
         cmd += "-lxt;"
     cmds.append(cmd)
@@ -206,7 +206,8 @@ if __name__ == '__main__':
                 print(CMD, flush=True)
                 cmdret = os.system(CMD)
                 if cmdret:
-                    print("ERROR: testsuite execution failed")
+                    print("ERROR: Command failed: " + CMD)
+                    sys.exit(1)
         print("")
 
     sys.exit(0)
