@@ -160,13 +160,13 @@ endfunction
     task run(msg=""); \
     begin \
         svut_suite_name = name; \
-        svut_msg = {"Start testsuite ", name}; \
+        svut_msg = {"Start testsuite << ", name, " >>"}; \
         `INFO(svut_msg);
 
 /// This header must be placed to start a test execution
 `define UNIT_TEST(name="") \
     begin \
-        svut_msg = {"Start test ", name}; \
+        svut_msg = {"Starting test << ", name, " >>"}; \
         `INFO(svut_msg); \
         setup(); \
         svut_test_name = name; \
