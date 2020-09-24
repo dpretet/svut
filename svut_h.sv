@@ -63,16 +63,22 @@
     $display("\033[0;32mSUCCESS: %s (@ %0t)\033[0m", msg, $time)
 
 `define WARNING(msg) \
-    $display("\033[1;33mWARNING: %s (@ %0t)\033[0m", msg, $time); \
-    svut_warning += 1
+    begin\
+    $display("\033[1;33mWARNING: %s (@ %0t)\033[0m", msg, $time);\
+    svut_warning += 1;\
+    end
 
 `define CRITICAL(msg) \
-    $display("\033[1;35mCRITICAL: %s (@ %0t)\033[0m", msg, $time); \
-    svut_critical += 1
+    begin\
+    $display("\033[1;35mCRITICAL: %s (@ %0t)\033[0m", msg, $time);\
+    svut_critical += 1;\
+    end
 
 `define ERROR(msg)\
-    $display("\033[1;31mERROR: %s (@ %0t)\033[0m", msg, $time); \
-    svut_error += 1
+    begin\
+    $display("\033[1;31mERROR: %s (@ %0t)\033[0m", msg, $time);\
+    svut_error += 1;\
+    end
 
 /// SVUT_SETUP is the code portion initializing all the needed
 /// variables. To call once before or after the module instance
@@ -160,12 +166,14 @@ endfunction
     task run(msg=""); \
     begin \
         svut_suite_name = name; \
+        $display("");\
         svut_msg = {"Start testsuite << ", name, " >>"}; \
         `INFO(svut_msg);
 
 /// This header must be placed to start a test execution
 `define UNIT_TEST(name="") \
     begin \
+        $display("");\
         svut_msg = {"Starting test << ", name, " >>"}; \
         `INFO(svut_msg); \
         setup(); \
@@ -191,6 +199,7 @@ endfunction
     endtask \
     initial begin\
         run(); \
+        $display("");\
         svut_msg = {"Stop testsuite ", svut_suite_name}; \
         `INFO(svut_msg); \
         if (svut_warning > 0) begin \
