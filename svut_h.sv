@@ -82,7 +82,6 @@
 
 /// SVUT_SETUP is the code portion initializing all the needed
 /// variables. To call once before or after the module instance
-
 `define SVUT_SETUP \
     integer svut_status = 0; \
     integer svut_warning = 0; \
@@ -95,16 +94,9 @@
     string svut_suite_name = ""; \
     string svut_msg = "";
 
-
 /// LAST_STATUS is a flag asserted if check the last
 /// check function failed
 `define LAST_STATUS svut_status
-
-/// Follows a set of macros to check an expression
-/// or a signal. All use the same syntax:
-///     - a signal or an expression to evaluate
-///     - an optional message to print if case the
-///       evaluation fails.
 
 /// This function is shared between assertions to format messages
 function string create_msg(input string assertion, message);
@@ -114,6 +106,11 @@ function string create_msg(input string assertion, message);
         create_msg = assertion;
 endfunction
 
+/// Follows a set of macros to check an expression
+/// or a signal. All use the same syntax:
+///     - a signal or an expression to evaluate
+///     - an optional message to print if case the
+///       evaluation fails.
 
 /// This check fails if expression is not = 0
 `define FAIL_IF(exp, message="") \
@@ -160,7 +157,6 @@ endfunction
         svut_status = 1; \
     end
 
-
 /// This header must be placed to start a test suite execution
 `define TEST_SUITE(name="") \
     task run(msg=""); \
@@ -202,19 +198,13 @@ endfunction
         $display("");\
         svut_msg = {"Stop testsuite ", svut_suite_name}; \
         `INFO(svut_msg); \
-        if (svut_warning > 0) begin \
-            $display("\t\033[1;33m- Warning number: %0d\033[0m", svut_warning); \
-        end \
-        if (svut_critical > 0) begin \
-            $display("\t\033[1;35m- Critical number: %0d\033[0m", svut_critical); \
-        end \
-        if (svut_error_total > 0) begin \
-            $display("\t\033[1;31m- Error number: %0d\033[0m", svut_error_total); \
-        end \
+        $display("  \033[1;33m- Warning number:  %0d\033[0m", svut_warning); \
+        $display("  \033[1;35m- Critical number: %0d\033[0m", svut_critical); \
+        $display("  \033[1;31m- Error number:    %0d\033[0m", svut_error_total); \
         if (svut_nb_test_success != svut_nb_test) begin \
-            $display("\t\033[1;31m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
+            $display("  \033[1;31m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end else begin \
-            $display("\t\033[0;32m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
+            $display("  \033[0;32m- STATUS: %0d/%0d test(s) passed\033[0m\n", svut_nb_test_success, svut_nb_test); \
         end \
         $finish(); \
     end

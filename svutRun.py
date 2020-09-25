@@ -64,7 +64,7 @@ def create_iverilog(args, test):
     """
     # Remove the compiled file if it exists. That ensures that a compilation
     # won't run an obsolete test.
-    cmds = ["rm -f a.out"]
+    cmds = ["rm -f icarus.out"]
     cmd = "iverilog -g2012 -Wall -o icarus.out "
 
     if args.dotfile:
