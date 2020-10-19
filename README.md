@@ -201,9 +201,11 @@ Then setup your path to launch `gtkwave` from your shell (restart it)
 ```bash
     export PATH="/Applications/gtkwave.app/Contents/Resources/bin/":$PATH
 ```
+You may need to install Perl’s Switch module to run gtkwave’s command line tool.
 
-You may need to install a Perl module, Switch. First enter in cpan (juste type
-cpan in your shell, or sudo cpan), then:
+  https://ughe.github.io/2018/11/06/gtkwave-osx
+
+First enter in cpan (juste type cpan in your shell, or sudo cpan), then:
 
 ```bash
     install Switch
