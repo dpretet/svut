@@ -24,8 +24,8 @@ Git clone the repository in a path. Set up the SVUT environment variable
 and add SVUT to `$PATH`:
 
 ```bash
-    git clone git@github.com:dpretet/svut.git $HOME/.svut
     export SVUT=$HOME/.svut
+    git clone https://github.com/dpretet/svut.git $SVUT
     export PATH=$SVUT:$PATH
 ```
 
