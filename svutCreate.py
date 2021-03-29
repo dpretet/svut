@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2020 The SVUT Authors
+Copyright 2021 The SVUT Authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -47,7 +47,9 @@ if __name__ == '__main__':
 
     # The next section will parse the user file and extract the parameters
     # list, the IOs name and width and the module name. Expect Verilog 2005
-    # style ONLY!
+    # style ONLY for IOs!
+    # This FSM is a very basic parser and handle simple construction.
+    # TODO: replace it with serious implementation like pyverilog
 
     # List of flags activated during parsing steps.
     intoComment = "No"
@@ -72,8 +74,8 @@ if __name__ == '__main__':
         # Remove space at beginning and end of line
         line = line.strip()
 
-        # Detect comment block in header
-        # and avoid to parse them
+        # Detect comment block in header and avoid to parse them
+        # A block comment like a license is thus ignored
         if line[0:2] == "/*":
             intoComment = "Yes"
             inlineComment = "No"
@@ -89,10 +91,8 @@ if __name__ == '__main__':
                 intoComment = "No"
             continue
 
-        # Search for the module name
-        # if `module` found, split line with " "
-        # and get the last part, the name.
-        # Expect `module module_name`alone on the line
+        # Search for the module name if `module` found, split line with " " and
+        # get the last part, the name.  Expect `module module_name` on the line
         if moduleFound == "No":
             if "module" in line:
                 moduleFound = "Yes"
@@ -101,54 +101,47 @@ if __name__ == '__main__':
                 if instance["name"][-1] == ";":
                     instance["name"] = instance["name"][:-1]
 
-        # Search for the parameter if present
-        # search a line with `parameter`, remove comment,
-        # replace comma with semicolon and store the line,
-        # ready to be written as a parameter declaration in
+        # Search for the parameter if present search a line with `parameter`,
+        # remove comment at the end of line, replace comma with semicolon and
+        # store the line, ready to be written as a parameter declaration in
         # testsuite file
         if parameterFound == "No":
             if line[0:9] == "parameter":
                 _line = line.split("//")[0].strip()
                 _line = _line.replace("\t", " ")
-                _line = _line.replace(",", ";")
+                _line = _line.replace(",", "")
                 if _line[-1] != ";":
                     _line = _line + ";"
                 instance["parameter"].append(_line)
 
-        # Search for the input and output
-        # Search for input or ouput, change comma
-        # to semicolon, signed|wire to reg and
-        # remove IO mode. Ready to be written
-        # into testsuite file.
+        # Search for input or ouput, change comma to semicolon, signed|wire to
+        # reg and remove IO mode. Remove comment at the end of line
+        # Ready to be written into testsuitefile.
         if ioFound == "No":
-
-            if line[0:5] == "input":
+            if line[0:5] == "input" or line[0:6] == "output":
                 _line = line.split("//")[0].strip()
-                _line = _line.replace("signed", "reg")
-                _line = _line.replace("wire", "reg ")
-                _line = _line.replace(",", ";")
-                _line = _line.replace("input", "")
-                instance["io"].append(_line.strip())
-
-            if line[0:6] == "output":
-
-                _line = line.split("//")[0].strip()
-                _line = _line.replace(",", ";")
-                _line = _line.replace("signed", "wire")
+                if line[0:10] == "input var ":
+                    _line = _line.replace("input var", "")
+                else:
+                    _line = _line.replace("input", "")
                 _line = _line.replace("output", "")
-                if _line[-1] != ";":
-                    _line = _line + ";"
+                _line = _line.replace("signed", "logic")
+                _line = _line.replace("wire", "logic")
+                _line = _line.replace("reg", "logic")
+                _line = _line.replace(",", "")
+                _line = _line + ";"
                 instance["io"].append(_line.strip())
 
     # This section stores the testsuite file with information
     # extracted. Give also example to use the macro, create a clock,
     # dump signals in a waveform and skeleton of the testsuite.
 
+    # print instance["parameter"]
     utfile = open(instance["name"] + "_testbench.sv", "w")
 
     utfile.write("/// Mandatory file to be able to launch SVUT flow\n")
     utfile.write("`include \"svut_h.sv\"\n\n")
-    utfile.write("/// Specify here the module to load or setup the path in files.f\n")
+    utfile.write("/// Specify the module to load or on files.f\n")
     utfile.write("""`include \"""" + file_name + """\"\n\n""")
     utfile.write("""`timescale 1 ns / 100 ps\n""")
     utfile.write("""\n""")
@@ -157,7 +150,7 @@ if __name__ == '__main__':
     utfile.write("""    `SVUT_SETUP\n""")
     utfile.write("""\n""")
 
-    # Print parameter declarationif present
+    # Print parameter declaration if present
     if instance["parameter"]:
         for param in instance["parameter"]:
             utfile.write("""    """ + param + "\n")
@@ -177,8 +170,14 @@ if __name__ == '__main__':
         utfile.write("""    #(\n""")
 
         for ix, param in enumerate(instance["parameter"]):
-            _param = param.split(" ")
-            utfile.write("    " + _param[-3])
+            # get left and right side around the equal sign
+            _param = param.split("=")
+            # split over space of the let side ('parameter param_name')
+            _param = _param[-2].split(" ")
+            # remove empty element in the list
+            _param = list(filter(None, _param))
+            # grab parameter name, always the last element in the list
+            utfile.write("    " + _param[-1])
             if ix == len(instance["parameter"]) - 1:
                 utfile.write("\n")
             else:
@@ -192,6 +191,7 @@ if __name__ == '__main__':
     if instance["io"]:
         for ix, io in enumerate(instance["io"]):
             _io = io.split(" ")
+            # write until the semicolumn
             utfile.write("    " + _io[-1][:-1])
             if ix == len(instance["io"]) - 1:
                 utfile.write("\n")
@@ -201,11 +201,11 @@ if __name__ == '__main__':
     utfile.write("""    );\n""")
 
     utfile.write("""\n""")
-    utfile.write("""    /// An example to create a clock for icarus:\n""")
+    utfile.write("""    /// to create a clock:\n""")
     utfile.write("""    /// initial aclk = 0;\n""")
-    utfile.write("""    /// always #2 aclk <= ~aclk;\n""")
+    utfile.write("""    /// always #2 aclk = ~aclk;\n""")
     utfile.write("""\n""")
-    utfile.write("""    /// An example to dump data for visualization\n""")
+    utfile.write("""    /// to dump data for visualization:\n""")
     utfile.write("""    /// initial begin\n""")
     utfile.write("""    ///     $dumpfile("waveform.vcd");\n""")
     utfile.write("""    ///     $dumpvars(0, %s);\n""" % (instance["name"] + "_testbench"))
@@ -223,7 +223,7 @@ if __name__ == '__main__':
     utfile.write("""    end\n""")
     utfile.write("""    endtask\n""")
     utfile.write("""\n""")
-    utfile.write("""    `TEST_SUITE("FIRST_ONE")\n""")
+    utfile.write("""    `TEST_SUITE("SUITE_NAME")\n""")
     utfile.write("""\n""")
     utfile.write("""    ///    Available macros:"\n""")
     utfile.write("""    ///\n""")
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     utfile.write("""    ///\n""")
     utfile.write("""    ///    - `LAST_STATUS: tied to 1 is last macro did experience a failure, else tied to 0\n""")
     utfile.write("""\n""")
-    utfile.write("""    `UNIT_TEST("TESTNAME")\n""")
+    utfile.write("""    `UNIT_TEST("TEST_NAME")\n""")
     utfile.write("""\n""")
     utfile.write("""        /// Describe here the testcase scenario\n""")
     utfile.write("""        /// \n""")

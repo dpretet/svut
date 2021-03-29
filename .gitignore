@@ -112,3 +112,4 @@ test/*.out
 test/*.vcd
 test/build/
 test/log
+debug

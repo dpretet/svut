@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2020 The SVUT Authors
+Copyright 2021 The SVUT Authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -183,12 +183,13 @@ if __name__ == '__main__':
             print("ERROR: Simulator not supported. Icarus is the only option")
             sys.exit(1)
 
+        # First copy svut_h.sv macro in the user folder if not present
+        # or different
         org_hfile = SCRIPTDIR + "/svut_h.sv"
         curr_hfile = os.getcwd() + "/svut_h.sv"
 
         if (not os.path.isfile(curr_hfile)) or\
                 (not filecmp.cmp(curr_hfile, org_hfile)):
-            # First copy macro in the user folder
             print("INFO: Copy newest version of svut_h.sv")
             os.system("cp " + org_hfile + " " + os.getcwd())
 

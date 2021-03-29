@@ -1,4 +1,4 @@
-/// Copyright 2020 The SVUT Authors
+/// Copyright 2021 The SVUT Authors
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -101,11 +101,12 @@
 `define LAST_STATUS svut_status
 
 /// This function is shared between assertions to format messages
-function string create_msg(input string assertion, message);
-    if (message != "")
+function automatic string create_msg(input string assertion, message);
+    if (message != "") begin
         create_msg = {message, " (", assertion, ")"};
-    else
+    end else begin
         create_msg = assertion;
+    end
 endfunction
 
 /// Follows a set of macros to check an expression
