@@ -184,14 +184,16 @@ endfunction
 /// This header must be placed to close a test
 `define UNIT_TEST_END \
         teardown(); \
-        svut_test_number = svut_test_number + 1; \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-            `SUCCESS("Test successful"); \
+            svut_msg = {"Test ", testnum, " pass"}; \
+            `SUCCESS(svut_msg); \
         end else begin \
-            `ERROR("Test failed"); \
+            svut_msg = {"Test ", testnum, " fail"}; \
+            `ERROR(svut_msg); \
             svut_error_total += svut_error; \
         end \
+        svut_test_number = svut_test_number + 1; \
     end
 
 /// This header must be placed to close a test suite
