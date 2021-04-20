@@ -75,7 +75,7 @@ module Adder_unit_test_KO;
                - `LAST_STATUS: tied to 1 is last macros has been asserted, else tied to 0
         */
 
-    `UNIT_TEST("REGRESSION")
+    `UNIT_TEST("Macro test")
 
         `MSG("I print a message for myself in the future\nThis message can span several line\nif I insert new line");
 
@@ -97,6 +97,14 @@ module Adder_unit_test_KO;
         `FAIL_IF_EQUAL(out, 8'd1);
 
         `ERROR("Test finished");
+
+    `UNIT_TEST_END
+
+    `UNIT_TEST("Define check")
+
+        `ifndef MYNODEF
+            `ERROR("No define found!");
+        `endif
 
     `UNIT_TEST_END
 

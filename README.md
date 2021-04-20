@@ -62,7 +62,7 @@ or simply
 SVUT will scan your current folder, search for the files with "_unit_test.sv"
 suffix and run all tests available.
 
-# Example
+# Tutorial
 
 Copy/paste this basic FFD model in a file named ffd.v into a new folder:
 
@@ -181,11 +181,26 @@ called `svutRun` in your shell, you should see something similar:
           -> STATUS:    1 /    1 test(s) passed
 ```
 
-Now you know the basics of SVUT. The \*_unit_test.sv provides prototypes of
-available macros.  Try them and play around to test SVUT. You can find these
-files into the example folder.  A simple makefile.example is present at the
+SVUT relies (optionally) on files.f to declare fileset and define. The user
+can also choose to pass define in the command line:
+
+```bash
+svutRun -test my_testbench.sv -define "DEF1=1;DEF2;DEF3=3"
+```
+
+SVUT doesn't check possible collision between define passed in command line
+and the others defined in files.f. Double check that point if unexpected
+behavior occurs during testbench.
+
+
+Now you know the basics of SVUT. The \*_testbench.sv provides prototypes of
+available macros. Try them and play around to test SVUT. You can find these
+files into the example folder. A simple makefile.example is present at the
 root level of this repo to launch the flow. It contains two targets, `make
-test` and `make gui`. Enjoy!
+test` and `make gui`.
+
+Enjoy!
+
 
 ## External tools
 

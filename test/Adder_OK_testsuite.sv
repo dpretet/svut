@@ -75,7 +75,7 @@ module Adder_unit_test_OK;
                - `LAST_STATUS: tied to 1 is last macros has been asserted, else tied to 0
         */
 
-    `UNIT_TEST("REGRESSION")
+    `UNIT_TEST("Macro test")
 
         `MSG("I print a message for myself in the future");
         `SUCCESS("All tests are expected OK!");
@@ -100,6 +100,21 @@ module Adder_unit_test_OK;
         `FAIL_IF_NOT_EQUAL(out, 8'd1);
 
         `SUCCESS("Test finished");
+
+    `UNIT_TEST_END
+
+    `UNIT_TEST("Define check")
+
+        `ifndef MYDEF1
+            `ERROR("No define 1 found!");
+        `endif
+
+        if (`MYDEF1!=5)
+            `ERROR("MYDEF1 is not equal to 5");
+
+        `ifndef MYDEF2
+            `ERROR("No define 2 found!");
+        `endif
 
     `UNIT_TEST_END
 

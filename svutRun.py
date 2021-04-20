@@ -58,6 +58,24 @@ def find_unit_tests():
     return files
 
 
+def get_defines(defines):
+    """
+    Return a string with the list of defines ready to drop in icarus
+    """
+    icarusdefs = ""
+
+    if not defines:
+        return icarusdefs
+
+    defs = defines.split(';')
+
+    for _def in defs:
+        if _def:
+            icarusdefs += "-D " + _def + " "
+
+    return icarusdefs
+
+
 def create_iverilog(args, test):
     """
     Create the Icarus Verilog command to launch the simulation
@@ -66,6 +84,9 @@ def create_iverilog(args, test):
     # won't run an obsolete test.
     cmds = ["rm -f icarus.out"]
     cmd = "iverilog -g2012 -Wall -o icarus.out "
+
+    if args.define:
+        cmd += get_defines(args.define)
 
     if args.dotfile:
 
@@ -150,6 +171,11 @@ if __name__ == '__main__':
     PARSER.add_argument('-sim', dest='simulator', type=str,
                         default="icarus",
                         help='The simulator to use.')
+
+    PARSER.add_argument('-define', dest='define', type=str,
+                        default="",
+                        help='''A list of define separated by ;\
+                              ex: -define "DEF1=2;DEF2;DEF3=3"''')
 
     PARSER.add_argument('-gui', dest='gui',
                         action='store_true',

@@ -9,7 +9,7 @@ set -o pipefail
 
 # First testsuite running over the adder, supposed to be successful
 
-"$DIR/../svutRun" -test "Adder_OK_testsuite.sv" | tee log
+"$DIR/../svutRun" -test "Adder_OK_testsuite.sv" -define "MYDEF1=5;MYDEF2" | tee log
 ret=$?
 
 if [[ $ret != 0 ]]; then
@@ -25,7 +25,7 @@ fi
 "$DIR/../svutRun" -test "Adder_KO_testsuite.sv" | tee log
 ret=$?
 
-error_num=7
+error_num=9
 # Count number of errors
 ec=$(grep -c "ERROR:" log)
 
