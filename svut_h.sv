@@ -94,7 +94,8 @@
     integer svut_nb_test_success = 0; \
     string svut_test_name = ""; \
     string svut_suite_name = ""; \
-    string svut_msg = "";
+    string svut_msg = ""; \
+    string svut_fail_list = "Failling tests:";
 
 /// LAST_STATUS is a flag asserted if check the last
 /// check function failed
@@ -174,7 +175,7 @@ endfunction
     begin \
         $display("");\
         $sformat(testnum, "%0d", svut_test_number); \
-        svut_msg = {"Starting test << ", "Test ", testnum, ": ", name, " >>"}; \
+        svut_msg = {"Starting << ", "Test ", testnum, ": ", name, " >>"}; \
         `INFO(svut_msg); \
         setup(); \
         svut_test_name = name; \
@@ -191,6 +192,7 @@ endfunction
         end else begin \
             svut_msg = {"Test ", testnum, " fail"}; \
             `ERROR(svut_msg); \
+            svut_fail_list = {svut_fail_list, " '", svut_test_name, "'"}; \
             svut_error_total += svut_error; \
         end \
         svut_test_number = svut_test_number + 1; \
@@ -203,8 +205,13 @@ endfunction
     initial begin\
         run(); \
         $display("");\
-        svut_msg = {"Stop testsuite ", svut_suite_name}; \
+        svut_msg = {"Stop testsuite '", svut_suite_name, "'"}; \
         `INFO(svut_msg); \
+        if (svut_error_total > 0) begin \
+            $display("\033[1;31m"); \
+            $display(svut_fail_list); \
+            $display(""); \
+        end \
         $display("  \033[1;33m- Warning number:  %0d\033[0m", svut_warning); \
         $display("  \033[1;35m- Critical number: %0d\033[0m", svut_critical); \
         $display("  \033[1;31m- Error number:    %0d\033[0m", svut_error_total); \
