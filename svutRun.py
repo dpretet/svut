@@ -113,7 +113,11 @@ def create_iverilog(args, test):
 
     cmds.append(cmd)
 
-    cmd = "vvp icarus.out "
+    cmd = "vvp "
+    if args.extra:
+        cmd += args.extra + " "
+    cmd += "icarus.out "
+
     if args.gui:
         cmd += "-lxt;"
     cmds.append(cmd)
@@ -176,6 +180,11 @@ if __name__ == '__main__':
                         default="",
                         help='''A list of define separated by ;\
                               ex: -define "DEF1=2;DEF2;DEF3=3"''')
+
+    PARSER.add_argument('-extra', dest='extra', type=str,
+                        default="",
+                        help='''A string of arguments passed as is to icarus, separated by a space\
+                              ex: -extra "-M. -mMyVPI"''')
 
     PARSER.add_argument('-gui', dest='gui',
                         action='store_true',
