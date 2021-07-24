@@ -54,29 +54,29 @@
 /// and information with an appropriate color.
 
 `define MSG(msg) \
-    $display("\033[0;37m%s (@ %0t)\033[0m", msg, $time)
+    $display("\033[0;37m%s (@ %0t)\033[0m", msg, $realtime)
 
 `define INFO(msg) \
-    $display("\033[0;34mINFO: %s (@ %0t)\033[0m", msg, $time)
+    $display("\033[0;34mINFO: %s (@ %0t)\033[0m", msg, $realtime)
 
 `define SUCCESS(msg) \
-    $display("\033[0;32mSUCCESS: %s (@ %0t)\033[0m", msg, $time)
+    $display("\033[0;32mSUCCESS: %s (@ %0t)\033[0m", msg, $realtime)
 
 `define WARNING(msg) \
     begin\
-    $display("\033[1;33mWARNING: %s (@ %0t)\033[0m", msg, $time);\
+    $display("\033[1;33mWARNING: %s (@ %0t)\033[0m", msg, $realtime);\
     svut_warning += 1;\
     end
 
 `define CRITICAL(msg) \
     begin\
-    $display("\033[1;35mCRITICAL: %s (@ %0t)\033[0m", msg, $time);\
+    $display("\033[1;35mCRITICAL: %s (@ %0t)\033[0m", msg, $realtime);\
     svut_critical += 1;\
     end
 
 `define ERROR(msg)\
     begin\
-    $display("\033[1;31mERROR: %s (@ %0t)\033[0m", msg, $time);\
+    $display("\033[1;31mERROR: %s (@ %0t)\033[0m", msg, $realtime);\
     svut_error += 1;\
     end
 
