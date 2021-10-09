@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # and exists in file system
     file_name = ""
 
-    if len(sys.argv) >= 1:
+    if len(sys.argv) > 1:
         file_name = sys.argv[1]
     else:
         print("ERROR: please specify a file to parse")
