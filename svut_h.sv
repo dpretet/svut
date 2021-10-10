@@ -95,7 +95,7 @@
     string svut_test_name = ""; \
     string svut_suite_name = ""; \
     string svut_msg = ""; \
-    string svut_fail_list = "Failling tests:";
+    string svut_fail_list = "Failling test(s):";
 
 /// LAST_STATUS is a flag asserted if check the last
 /// check function failed

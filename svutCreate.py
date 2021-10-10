@@ -25,6 +25,7 @@ SOFTWARE.
 
 import os
 import sys
+import re
 
 if __name__ == '__main__':
 
@@ -121,14 +122,14 @@ if __name__ == '__main__':
             if line[0:5] == "input" or line[0:6] == "output":
                 _line = line.split("//")[0].strip()
                 if line[0:10] == "input var ":
-                    _line = _line.replace("input var", "")
+                    _line = re.sub("input var", "", _line)
                 else:
-                    _line = _line.replace("input", "")
-                _line = _line.replace("output", "")
-                _line = _line.replace("signed", "logic")
-                _line = _line.replace("wire", "logic")
-                _line = _line.replace("reg", "logic")
-                _line = _line.replace(",", "")
+                    _line = re.sub("input", "", _line)
+                _line = re.sub("output", "", _line)
+                _line = re.sub("signed", "logic", _line)
+                _line = re.sub("wire", "logic", _line)
+                _line = re.sub("\sreg\s", "logic", _line)
+                _line = re.sub(",", "", _line)
                 _line = _line + ";"
                 instance["io"].append(_line.strip())
 
