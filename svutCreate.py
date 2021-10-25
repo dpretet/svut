@@ -170,6 +170,16 @@ if __name__ == '__main__':
     if instance["parameter"]:
         utfile.write("""    #(\n""")
 
+        # First get the longest name
+        maxlen = 0
+        for idx, param in enumerate(instance["parameter"]):
+
+            _param = param.split(" ")
+            _name = _param[-3]
+
+            if len(_name) > maxlen:
+                maxlen = len(_name)
+
         for ix, param in enumerate(instance["parameter"]):
             # get left and right side around the equal sign
             _param = param.split("=")
@@ -178,7 +188,13 @@ if __name__ == '__main__':
             # remove empty element in the list
             _param = list(filter(None, _param))
             # grab parameter name, always the last element in the list
-            utfile.write("    " + _param[-1])
+            _name = _param[-1]
+
+            _text = "    ." + _name + \
+                " " * (maxlen - len(_name)) + \
+                " (" + _name + ")"
+
+            utfile.write(_text)
             if ix == len(instance["parameter"]) - 1:
                 utfile.write("\n")
             else:
@@ -190,10 +206,26 @@ if __name__ == '__main__':
 
     # Print input/output instance if present
     if instance["io"]:
+
+        # First get the longest name
+        maxlen = 0
+        for idx, ios in enumerate(instance["io"]):
+            _io = ios.split(" ")
+            _name = _io[-1][:-1]
+            if len(_name) > maxlen:
+                maxlen = len(_name)
+
         for ix, io in enumerate(instance["io"]):
+
             _io = io.split(" ")
             # write until the semicolumn
-            utfile.write("    " + _io[-1][:-1])
+            _name = _io[-1][:-1]
+
+            _text = "    ." + _name + \
+                " " * (maxlen - len(_name)) + \
+                " (" + _name + ")"
+
+            utfile.write(_text)
             if ix == len(instance["io"]) - 1:
                 utfile.write("\n")
             else:
