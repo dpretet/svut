@@ -27,6 +27,8 @@ import os
 import sys
 import argparse
 import filecmp
+import subprocess
+import datetime
 
 SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -228,12 +230,22 @@ if __name__ == '__main__':
             print("INFO: Copy newest version of svut_h.sv")
             os.system("cp " + org_hfile + " " + os.getcwd())
 
-        # The execute all commands
-        print("")
-        print("--------")
-        print("< SVUT >")
-        print("--------")
 
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        curr_path = os.getcwd()
+        os.chdir(file_path)
+        git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
+        git_tag = git_tag.strip().decode('ascii')
+        os.chdir(curr_path)
+
+        print("")
+        print("------------------------------------------------")
+        print("SVUT", git_tag)
+        print("Start @", datetime.datetime.now().time().strftime('%H:%M:%S'))
+        print("------------------------------------------------")
+        print("")
+
+        # Then execute all commands
         for CMD in CMDS:
             if ARGS.dry:
                 print(CMD, flush=True)
@@ -243,7 +255,13 @@ if __name__ == '__main__':
                 cmdret = os.system(CMD)
                 if cmdret:
                     print("ERROR: Command failed: " + CMD)
+                    print("------------------------------------------------")
+                    print("Stop @", datetime.datetime.now().time().strftime('%H:%M:%S'))
+                    print("-----------------------------------------------\n")
                     sys.exit(1)
-        print("")
+
+        print("------------------------------------------------")
+        print("Stop @", datetime.datetime.now().time().strftime('%H:%M:%S'))
+        print("------------------------------------------------\n")
 
     sys.exit(0)
