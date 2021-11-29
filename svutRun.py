@@ -29,6 +29,8 @@ import argparse
 import filecmp
 import subprocess
 import datetime
+from timeit import default_timer as timer
+from datetime import timedelta
 
 SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -238,6 +240,8 @@ if __name__ == '__main__':
         git_tag = git_tag.strip().decode('ascii')
         os.chdir(curr_path)
 
+        start = timer()
+
         print("")
         print("------------------------------------------------")
         print("SVUT", git_tag)
@@ -260,8 +264,12 @@ if __name__ == '__main__':
                     print("-----------------------------------------------\n")
                     sys.exit(1)
 
+        end = timer()
+
         print("------------------------------------------------")
+        print("SVUT", git_tag)
         print("Stop @", datetime.datetime.now().time().strftime('%H:%M:%S'))
+        print("Elapsed time:", timedelta(seconds=end-start))
         print("------------------------------------------------\n")
 
     sys.exit(0)
