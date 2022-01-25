@@ -192,6 +192,13 @@ SVUT doesn't check possible collision between define passed in command line
 and the others defined in files.f. Double check that point if unexpected
 behavior occurs during testbench.
 
+Finally, SVUT supports VPI for Icarus. Follow an example to compile and set up
+the flow of an hypothetic UART, compiled with iverilog and using a define "PORT":
+
+```bash
+iverilog-vpi uart.c
+svutRun -vpi "-M. -muart" -define "PORT=3333" -t ./my_testbench.sv &
+```
 
 Now you know the basics of SVUT. The \*_testbench.sv provides prototypes of
 available macros. Try them and play around to test SVUT. You can find these
