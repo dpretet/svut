@@ -1,27 +1,14 @@
 // Mandatory file to be able to launch SVUT flow
 `include "svut_h.sv"
 // Specify the module to load or on files.f
-`include "ffd.sv"
+`include "${name}.sv"
 `timescale 1 ns / 100 ps
 
-module ffd_testbench();
+module ${name}_testbench();
 
     `SVUT_SETUP
 
-        logic aclk;
-    logic arstn;
-    logic d;
-    logic q;
-
-    ffd 
-    dut 
-    (
-    .aclk  (aclk),
-    .arstn (arstn),
-    .d     (d),
-    .q     (q)
-    );
-
+${module_inst}
 
     // To create a clock:
     // initial aclk = 0;
@@ -29,12 +16,12 @@ module ffd_testbench();
 
     // To dump data for visualization:
     // initial begin
-    //     $dumpfile("ffd_testbench.vcd");
-    //     $dumpvars(0, ffd);
+    //     $$dumpfile("${name}_testbench.vcd");
+    //     $$dumpvars(0, ${name}_testbench);
     // end
 
-    // Setup time format when printing with $realtime\n""")
-    initial $timeformat(-9, 1, "ns", 8);
+    // Setup time format when printing with $$realtime()
+    initial $$timeformat(-9, 1, "ns", 8);
 
     task setup(msg="");
     begin
@@ -73,7 +60,7 @@ module ffd_testbench();
     `UNIT_TEST("TESTCASE_NAME")
 
         // Describe here the testcase scenario
-        // 
+        //
         // Because SVUT uses long nested macros, it's possible
         // some local variable declaration leads to compilation issue.
         // You should declare your variables after the IOs declaration to avoid that.

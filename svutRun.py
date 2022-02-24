@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2021 The SVUT Authors
+Copyright 2022 The SVUT Authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,6 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
+# pylint: disable=W0621
 
 import os
 import sys
@@ -135,16 +137,33 @@ def create_iverilog(args, test):
     return cmds
 
 
-def create_verilator(test):
+def create_verilator(args, test):
     """
     Create the Verilator command to launch the simulation
     """
 
-    testname = test.split(".")[0]
+    testname = os.path.basename(test).split(".")[0]
+
     cmds = ["rm -fr build"]
     # build compilation command
     cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
-    cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN """
+    cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
+    cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
+
+    if args.dotfile:
+
+        dotfiles = ""
+
+        for dot in args.dotfile:
+            if os.path.isfile(dot):
+                dotfiles += dot + " "
+
+        if dotfiles:
+            cmd += "-f " + dotfiles + " "
+
+    if args.include:
+        for inc in args.include:
+            cmd += "+incdir+" + inc + " "
 
     # Check the extension and extract test name
     if test[-2:] != ".v" and test[-3:] != ".sv":
@@ -152,7 +171,8 @@ def create_verilator(test):
                Must use either *.v or *.sv")
         sys.exit(1)
 
-    cmd += "--cc " + test + " --exe sim_main.cpp"
+    cmd += "-cc --exe --build -j --top-module " + testname + " "
+    cmd += test + " " + args.main
     cmds.append(cmd)
 
     # Build execution command
@@ -162,6 +182,34 @@ def create_verilator(test):
     cmds.append(cmd)
 
     return cmds
+
+
+def print_event(event, git_tag):
+    """
+    Print an event during SVUT execution
+    """
+
+    print("")
+    print("------------------------------------------------")
+    print("SVUT " + git_tag)
+    print(event + " @ " + datetime.datetime.now().time().strftime('%H:%M:%S'))
+    print("------------------------------------------------")
+    print("")
+    return 0
+
+
+def get_git_tag():
+    """
+    Return current SVUT version
+    """
+
+    file_path = os.path.dirname(os.path.abspath(__file__)) 
+    curr_path = os.getcwd()
+    os.chdir(file_path)
+    git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
+    git_tag = git_tag.strip().decode('ascii')
+    os.chdir(curr_path)
+    return git_tag
 
 
 if __name__ == '__main__':
@@ -179,6 +227,10 @@ if __name__ == '__main__':
     PARSER.add_argument('-sim', dest='simulator', type=str,
                         default="icarus",
                         help='The simulator to use.')
+
+    PARSER.add_argument('-main', dest='main', type=str,
+                        default="sim_main.cpp",
+                        help='Verilator main cpp file')
 
     PARSER.add_argument('-define', dest='define', type=str,
                         default="",
@@ -199,7 +251,7 @@ if __name__ == '__main__':
                         help='Just print the command, don\'t execute. \
                                 For debug purpose only.')
 
-    PARSER.add_argument('-I', dest='include', type=str, nargs="*",
+    PARSER.add_argument('-include', dest='include', type=str, nargs="*",
                         default="", help='Specify an include folder')
 
     ARGS = PARSER.parse_args()
@@ -216,14 +268,13 @@ if __name__ == '__main__':
             CMDS = create_iverilog(ARGS, tests)
 
         elif "verilator" in ARGS.simulator:
-            CMDS = create_verilator(tests)
+            CMDS = create_verilator(ARGS, tests)
 
         else:
             print("ERROR: Simulator not supported. Icarus is the only option")
             sys.exit(1)
 
-        # First copy svut_h.sv macro in the user folder if not present
-        # or different
+        # First copy svut_h.sv macro in the user folder if not present or different
         org_hfile = SCRIPTDIR + "/svut_h.sv"
         curr_hfile = os.getcwd() + "/svut_h.sv"
 
@@ -232,44 +283,28 @@ if __name__ == '__main__':
             print("INFO: Copy newest version of svut_h.sv")
             os.system("cp " + org_hfile + " " + os.getcwd())
 
+        # Get git tag to print it during status
+        GIT_TAG = get_git_tag()
 
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        curr_path = os.getcwd()
-        os.chdir(file_path)
-        git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
-        git_tag = git_tag.strip().decode('ascii')
-        os.chdir(curr_path)
+        # Don't execute command, just print them for debug purpose
+        if ARGS.dry:
+            print("SVUT " + GIT_TAG + " dry-run: ")
+            print(CMDS, flush=True)
+            sys.exit(0)
 
         start = timer()
+        print_event("Start", GIT_TAG)
 
-        print("")
-        print("------------------------------------------------")
-        print("SVUT", git_tag)
-        print("Start @", datetime.datetime.now().time().strftime('%H:%M:%S'))
-        print("------------------------------------------------")
-        print("")
-
-        # Then execute all commands
+        # Execute commands one by one
         for CMD in CMDS:
-            if ARGS.dry:
-                print(CMD, flush=True)
-                sys.exit(0)
-            else:
-                print(CMD, flush=True)
-                cmdret = os.system(CMD)
-                if cmdret:
-                    print("ERROR: Command failed: " + CMD)
-                    print("------------------------------------------------")
-                    print("Stop @", datetime.datetime.now().time().strftime('%H:%M:%S'))
-                    print("-----------------------------------------------\n")
-                    sys.exit(1)
+            print(CMD, flush=True)
+            cmdret = os.system(CMD)
+            if cmdret:
+                print("ERROR: Command failed: " + CMD)
+                break
 
         end = timer()
-
-        print("------------------------------------------------")
-        print("SVUT", git_tag)
-        print("Stop @", datetime.datetime.now().time().strftime('%H:%M:%S'))
         print("Elapsed time:", timedelta(seconds=end-start))
-        print("------------------------------------------------\n")
 
-    sys.exit(0)
+        print_event("Stop", GIT_TAG)
+        sys.exit(cmdret)
