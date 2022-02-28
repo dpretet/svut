@@ -77,7 +77,7 @@ module Adder_unit_test_OK;
 
     `UNIT_TEST("Macro test")
 
-        `MSG("I print a message for myself in the future");
+        `MSG("I print a message for myself");
         `SUCCESS("All tests are expected OK!");
         // Basic tests of the main functions. All results are expected OK
         `INFO("Test FAIL_IF");

@@ -223,6 +223,21 @@ def get_instance(instance):
 
     return mod_inst
 
+def dump_template(file_name, tmpl):
+    """
+    Store the template transformated after substitution
+    """
+    try:
+        # Store the testbench
+        with open(file_name, "w", encoding="utf-8") as ofile:
+            ofile.write(tmpl)
+            ofile.close()
+    except OSError:
+        print("Can't store template")
+        sys.exit(1)
+
+    return 0
+
 
 def print_recommandation(name):
     """
@@ -280,15 +295,12 @@ if __name__ == '__main__':
     # Load the system verilog template and substitute
     tmpl = Path(SCRIPTDIR+"/template.sv", encoding="utf-8").read_text()
     tmpl = Template(tmpl).substitute(tmpl_data)
+    dump_template(verilog_info["name"] + "_testbench.sv", tmpl)
 
-    try:
-        # Store the testbench
-        with open(verilog_info["name"] + "_testbench.sv", "w", encoding="utf-8") as utfile:
-            utfile.write(tmpl)
-            utfile.close()
-    except OSError:
-        print("Can't store testbench")
-        sys.exit(1)
+    # Load the cpp template and substitute
+    tmpl = Path(SCRIPTDIR+"/template.cpp", encoding="utf-8").read_text()
+    tmpl = Template(tmpl).substitute(tmpl_data)
+    dump_template("sim_main.cpp", tmpl)
 
     # Print recommandation to users before exiting
     print_recommandation(verilog_info["name"])

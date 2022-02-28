@@ -77,7 +77,7 @@ module Adder_unit_test_KO;
 
     `UNIT_TEST("Macro test")
 
-        `MSG("I print a message for myself in the future\nThis message can span several line\nif I insert new line");
+        `MSG("I print a message for myself\nThis message can span several lines\nif I insert new line");
 
         // Basic tests of the main functions. All results are expected KO
         `CRITICAL("All tests are expected KO");

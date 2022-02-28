@@ -1,6 +1,7 @@
 # SystemVerilog Unit Test (SVUT)
 
 [![GitHub license](https://img.shields.io/github/license/dpretet/svut)](https://github.com/dpretet/svut/blob/master/LICENSE)
+![Github Actions](https://github.com/dpretet/svut/actions/workflows/ci.yaml/badge.svg)
 [![Build Status](https://travis-ci.org/dpretet/svut.svg?branch=master)](https://travis-ci.org/dpretet/svut)
 [![GitHub issues](https://img.shields.io/github/issues/dpretet/svut)](https://github.com/dpretet/svut/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dpretet/svut)](https://github.com/dpretet/svut/stargazers)
@@ -24,9 +25,9 @@ Git clone the repository in a path. Set up the SVUT environment variable
 and add SVUT to `$PATH`:
 
 ```bash
-    export SVUT=$HOME/.svut
-    git clone https://github.com/dpretet/svut.git $SVUT
-    export PATH=$SVUT:$PATH
+export SVUT=$HOME/.svut
+git clone https://github.com/dpretet/svut.git $SVUT
+export PATH=$SVUT:$PATH
 ```
 
 SVUT relies on [Icarus Verilog](http://iverilog.icarus.com/) as simulation
@@ -41,54 +42,68 @@ work with with lower version (`<= v9.x`).
 To create a unit test of a verilog module, call the command:
 
 ```bash
-    svutCreate your_file.v
+svutCreate your_file.v
 ```
 
-SVUT will create "your_file_unit_test.sv" which contains your module
-instanciated and a place to write your testcase(s). Some codes are also
-commented to describe the different macros and how to create a clock or dump a
-VCD for GTKWave.  To run a test, call the command:
+No argument is required. SVUT will create "your_file_unit_test.sv" which contains your module
+instanciated and a place to write your testcase(s). Some codes are also commented to describe the
+different macros and how to create a clock or dump a VCD for GTKWave.  To run a test, call the
+command:
 
 ```bash
-    svutRun -test your_file_unit_test.sv
+svutRun -test your_file_unit_test.sv
 ```
 
-or simply
+or simply `svutRun` to execute all testbenchs in the current folder.
 
 ```bash
-    svutRun
+svutRun
 ```
 
-SVUT will scan your current folder, search for the files with "_unit_test.sv"
+SVUT will scan your current folder, search for the files with "\_unit\_test.sv"
 suffix and run all tests available.
+
+svutRun proposes several arguments, most optional:
+
+- `-test`: specify the testsuite to execute
+- `-f`: pass the fileset description
+- `sim`: specify the simulator, icarus or verilator
+- `-main`: specify the main.cpp file when using verilator
+- `-define`: pass verilog defines to the tool, like `-define "DEF1=2;DEF2;DEF3=3"`
+- `-vpi`: specify a compiled VPI, like `-vpi "-M. -mMyVPI"`
+- `-gui`: to launch GTKWave after execution
+- `-dry-run`: prepare the command to execute but just print them
+- `-include`: to pass include path, several can be passed like `-include folder1 folder2`
+- `-help`: to print help menu and exit
+
 
 # Tutorial
 
 Copy/paste this basic FFD model in a file named ffd.v into a new folder:
 
 ```verilog
-    `timescale 1 ns / 1 ps
+`timescale 1 ns / 1 ps
 
-    module ffd
-        (
-        input  wire aclk,
-        input  wire arstn,
-        input  wire d,
-        output reg  q
-        );
+module ffd
+    (
+    input  wire aclk,
+    input  wire arstn,
+    input  wire d,
+    output reg  q
+    );
 
-        always @ (posedge aclk or negedge arstn) begin
-            if (arstn == 1'b0) q <= 1'b0;
-            else q <= d;
-        end
+    always @ (posedge aclk or negedge arstn) begin
+        if (arstn == 1'b0) q <= 1'b0;
+        else q <= d;
+    end
 
-    endmodule
+endmodule
 ```
 
 Then run:
 
 ```bash
-    svutCreate ffd.v
+svutCreate ffd.v
 ```
 
 ffd_unit_test.v has been dropped in the folder from you called svutCreate. It
@@ -96,7 +111,7 @@ contains all you need to start populating your testcases. In the header, you
 can include directly your DUT file (uncomment):
 
 ```verilog
-    `include "ffd.v"
+`include "ffd.v"
 ```
 
 or you can store the path to your file into a `files.f` file, automatically
@@ -104,22 +119,22 @@ recognized by SVUT.  Populate it with the files describing your IP. You can
 also specify include folder in this way:
 
 ```bash
-    +incdir+$HOME/path/to/include/
++incdir+$HOME/path/to/include/
 ```
 
 Right after the module instance, you can use the example to generate a clock
 (uncomment):
 
 ```verilog
-    initial aclk = 0;
-    always #2 aclk <= ~aclk;
+initial aclk = 0;
+always #2 aclk <= ~aclk;
 ```
 
 Next line explains how to dump your signals values into a VCD file to open a
 waveform in GTKWave (uncomment):
 
 ```verilog
-    initial $dumpvars(0, ffd_unit_test);
+initial $dumpvars(0, ffd_unit_test);
 ```
 
 Two functions follow, setup() and teardown(). Use them to configure the
@@ -130,9 +145,9 @@ environment of the testcases:
 A testcase is enclosed between to specific defines:
 
 ```verilog
-    `UNIT_TEST("TESTNAME")
-        ...
-    `UNIT_TEST_END
+`UNIT_TEST("TESTNAME")
+    ...
+`UNIT_TEST_END
 ```
 
 TESTNAME is a string (optional), which will be displayed when test execution
@@ -144,41 +159,40 @@ error counter is bigger than 0, the test is considered as failed.
 A testsuite, comprising several `UNIT_TEST` is declared with another define:
 
 ```verilog
-    `TEST_SUITE("SUITENAME")
+`TEST_SUITE("SUITENAME")
     ...
-
-    `TEST_SUITE_END
+`TEST_SUITE_END
 ```
 
 To test the FFD, add the next line into setup() to drive the reset and init the
 FFD input:
 
 ```verilog
-    arstn = 1'b0;
-    d = 1'b0;
-    #100;
-    arstn = 1'b1;
+arstn = 1'b0;
+d = 1'b0;
+#100;
+arstn = 1'b1;
 ```
 
 and into the testcase:
 
 ```verilog
-    `FAIL_IF(q);
+`FAIL_IF(q);
 ```
 
 Here is a basic unit test checking if the FFD output is 0 after reset. Once
 called `svutRun` in your shell, you should see something similar:
 
 ```
-    INFO:     Testsuite execution started
+INFO:     Testsuite execution started
 
-    INFO:     [100] Start TEST_IF_RESET_IS_APPLIED_WELL
-    INFO:     [100] Test finished
-    SUCCESS:  [100] Test successful
+INFO:     [100] Start TEST_IF_RESET_IS_APPLIED_WELL
+INFO:     [100] Test finished
+SUCCESS:  [100] Test successful
 
-    INFO:     Testsuite execution finished @ 100
+INFO:     Testsuite execution finished @ 100
 
-          -> STATUS:    1 /    1 test(s) passed
+      -> STATUS:    1 /    1 test(s) passed
 ```
 
 SVUT relies (optionally) on files.f to declare fileset and define. The user
@@ -200,7 +214,7 @@ iverilog-vpi uart.c
 svutRun -vpi "-M. -muart" -define "PORT=3333" -t ./my_testbench.sv &
 ```
 
-Now you know the basics of SVUT. The \*_testbench.sv provides prototypes of
+Now you know the basics of SVUT. The generated testbench.sv provides prototypes of
 available macros. Try them and play around to test SVUT. You can find these
 files into the example folder. A simple makefile.example is present at the
 root level of this repo to launch the flow. It contains two targets, `make
@@ -215,13 +229,13 @@ To use `make gui` command, opening by default GTKwave, be sure to setup
 properly this tool in your path.  For Mac OS users, first install with brew:
 
 ```bash
-    brew cask install gtkwave
+brew cask install gtkwave
 ```
 
 Then setup your path to launch `gtkwave` from your shell (restart it)
 
 ```bash
-    export PATH="/Applications/gtkwave.app/Contents/Resources/bin/":$PATH
+export PATH="/Applications/gtkwave.app/Contents/Resources/bin/":$PATH
 ```
 You may need to install Perl’s Switch module to run gtkwave’s command line tool.
 
@@ -230,7 +244,7 @@ You may need to install Perl’s Switch module to run gtkwave’s command line t
 First enter in cpan (juste type cpan in your shell, or sudo cpan), then:
 
 ```bash
-    install Switch
+install Switch
 ```
 
 GTKWave should open up without problems :)
