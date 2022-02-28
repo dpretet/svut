@@ -9,7 +9,7 @@ set -o pipefail
 
 # First testsuite running over the adder, supposed to be successful
 
-"$DIR/../svutRun" -test "Adder_OK_testsuite.sv" -define "MYDEF1=5;MYDEF2" | tee log
+"$DIR/../svutRun" -test "$DIR/Adder_OK_testsuite.sv" -define "MYDEF1=5;MYDEF2" | tee log
 ret=$?
 
 if [[ $ret != 0 ]]; then
@@ -22,7 +22,7 @@ fi
 
 # Second testsuite running over the adder, supposed to fail
 
-"$DIR/../svutRun" -test "Adder_KO_testsuite.sv" | tee log
+"$DIR/../svutRun" -test "$DIR/Adder_KO_testsuite.sv" | tee log
 ret=$?
 
 error_num=9

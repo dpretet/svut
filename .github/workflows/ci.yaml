@@ -1,0 +1,16 @@
+name: SVUT
+on: [push]
+jobs:
+  lint-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt install pylint
+      - run: cd test; ./lint.sh
+  ci-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt install iverilog
+      - run: iverilog -V
+      - run: cd test; ./regression.sh

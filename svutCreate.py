@@ -263,6 +263,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     print("INFO: Start to generate the testbench")
+
     # First extract information from the module to test
     try:
         with open(FILE_NAME, "r", encoding="utf-8") as verilog_module:
@@ -270,7 +271,6 @@ if __name__ == '__main__':
     except OSError:
         print(f"ERROR: Can't find file {FILE_NAME} to load...")
         sys.exit(1)
-
 
     # Put in shape the module instance and the wire declarations
     module_inst = get_instance(verilog_info)

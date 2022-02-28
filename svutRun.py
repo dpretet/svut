@@ -206,8 +206,14 @@ def get_git_tag():
     file_path = os.path.dirname(os.path.abspath(__file__)) 
     curr_path = os.getcwd()
     os.chdir(file_path)
-    git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
-    git_tag = git_tag.strip().decode('ascii')
+
+    try:
+        git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
+        git_tag = git_tag.strip().decode('ascii')
+    except:
+        print("WARNING: Can't get last git tag. Will return v0.0.0")
+        git_tag = "v0.0.0"
+
     os.chdir(curr_path)
     return git_tag
 
