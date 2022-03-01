@@ -2,19 +2,20 @@
 `include "svut_h.sv"
 // Specify the module to load or on files.f
 `include "ffd.sv"
+
 `timescale 1 ns / 100 ps
 
 module ffd_testbench();
 
     `SVUT_SETUP
 
-        logic aclk;
+    logic aclk;
     logic arstn;
     logic d;
     logic q;
 
-    ffd 
-    dut 
+    ffd
+    dut
     (
     .aclk  (aclk),
     .arstn (arstn),
@@ -23,22 +24,23 @@ module ffd_testbench();
     );
 
 
-    // To create a clock:
-    // initial aclk = 0;
-    // always #2 aclk = ~aclk;
+    // An example to create a clock for icarus:
+    initial aclk = 0;
+    always #2 aclk <= ~aclk;
 
-    // To dump data for visualization:
-    // initial begin
-    //     $dumpfile("ffd_testbench.vcd");
-    //     $dumpvars(0, ffd);
-    // end
-
-    // Setup time format when printing with $realtime\n""")
-    initial $timeformat(-9, 1, "ns", 8);
+    // An example to dump data for visualization
+    initial begin
+        $dumpfile("waveform.vcd");
+        $dumpvars(0, ffd_testbench);
+    end
 
     task setup(msg="");
     begin
         // setup() runs when a test begins
+        arstn = 1'b0;
+        d = 1'b0;
+        #100;
+        arstn = 1'b1;
     end
     endtask
 
@@ -48,16 +50,15 @@ module ffd_testbench();
     end
     endtask
 
-    `TEST_SUITE("TESTSUITE_NAME")
+    `TEST_SUITE("FIRST_ONE")
 
-    //  Available macros:"
+    //    Available macros:"
     //
-    //    - `MSG("message"):       Print a raw white message
-    //    - `INFO("message"):      Print a blue message with INFO: prefix
-    //    - `SUCCESS("message"):   Print a green message if SUCCESS: prefix
-    //    - `WARNING("message"):   Print an orange message with WARNING: prefix and increment warning counter
-    //    - `CRITICAL("message"):  Print a purple message with CRITICAL: prefix and increment critical counter
-    //    - `ERROR("message"):     Print a red message with ERROR: prefix and increment error counter
+    //    - `INFO("message"):      Print a grey message
+    //    - `SUCCESS("message"):   Print a green message
+    //    - `WARNING("message"):   Print an orange message and increment warning counter
+    //    - `CRITICAL("message"):  Print an pink message and increment critical counter
+    //    - `ERROR("message"):     Print a red message and increment error counter
     //
     //    - `FAIL_IF(aSignal):                 Increment error counter if evaluaton is true
     //    - `FAIL_IF_NOT(aSignal):             Increment error coutner if evaluation is false
@@ -66,17 +67,29 @@ module ffd_testbench();
     //    - `ASSERT(aSignal):                  Increment error counter if evaluation is not true
     //    - `ASSERT((aSignal == 0)):           Increment error counter if evaluation is not true
     //
-    //  Available flag:
+    //    Available flag:
     //
     //    - `LAST_STATUS: tied to 1 is last macro did experience a failure, else tied to 0
 
-    `UNIT_TEST("TESTCASE_NAME")
+    `UNIT_TEST("CHECK RESET IS APPLIED")
 
-        // Describe here the testcase scenario
-        // 
-        // Because SVUT uses long nested macros, it's possible
-        // some local variable declaration leads to compilation issue.
-        // You should declare your variables after the IOs declaration to avoid that.
+        `INFO("I will test if q output is 0 after reset");
+        # 10;
+        `FAIL_IF(q, "this flip-flop should be zeroed after reset");
+        `ASSERT(q===0, "this flip-flop should be zeroed after reset");
+
+    `UNIT_TEST_END
+
+    `UNIT_TEST("DRIVE THE FFD")
+
+        `INFO("I will test if q output is 1 after d assertion");
+        # 10;
+        d = 1'b1;
+        @ (posedge aclk);
+        @ (posedge aclk);
+        `FAIL_IF_NOT(q, "this flip-flop should be enabled after reset");
+        `ASSERT(q===1, "this flip-flop should be enabled after reset");
+        # 10;
 
     `UNIT_TEST_END
 

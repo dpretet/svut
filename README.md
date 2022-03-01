@@ -2,7 +2,6 @@
 
 [![GitHub license](https://img.shields.io/github/license/dpretet/svut)](https://github.com/dpretet/svut/blob/master/LICENSE)
 ![Github Actions](https://github.com/dpretet/svut/actions/workflows/ci.yaml/badge.svg)
-[![Build Status](https://travis-ci.org/dpretet/svut.svg?branch=master)](https://travis-ci.org/dpretet/svut)
 [![GitHub issues](https://img.shields.io/github/issues/dpretet/svut)](https://github.com/dpretet/svut/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dpretet/svut)](https://github.com/dpretet/svut/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/dpretet/svut)](https://github.com/dpretet/svut/network)
@@ -45,13 +44,13 @@ To create a unit test of a verilog module, call the command:
 svutCreate your_file.v
 ```
 
-No argument is required. SVUT will create "your_file_unit_test.sv" which contains your module
+No argument is required. SVUT will create "your_file_testbench.sv" which contains your module
 instanciated and a place to write your testcase(s). Some codes are also commented to describe the
-different macros and how to create a clock or dump a VCD for GTKWave.  To run a test, call the
+different macros and how to create a clock or dump a VCD for GTKWave. To run a test, call the
 command:
 
 ```bash
-svutRun -test your_file_unit_test.sv
+svutRun -test your_file_testbench.sv
 ```
 
 or simply `svutRun` to execute all testbenchs in the current folder.
@@ -60,8 +59,8 @@ or simply `svutRun` to execute all testbenchs in the current folder.
 svutRun
 ```
 
-SVUT will scan your current folder, search for the files with "\_unit\_test.sv"
-suffix and run all tests available.
+SVUT will scan your current folder, search for the files with "\_testbench.sv"
+suffix and run all tests available. Multiple suffix patterns are [possible](https://github.com/dpretet/svut/blob/master/svutRun.py#L46).
 
 svutRun proposes several arguments, most optional:
 
@@ -106,7 +105,7 @@ Then run:
 svutCreate ffd.v
 ```
 
-ffd_unit_test.v has been dropped in the folder from you called svutCreate. It
+ffd_testbench.v has been dropped in the folder from you called svutCreate. It
 contains all you need to start populating your testcases. In the header, you
 can include directly your DUT file (uncomment):
 
@@ -115,7 +114,7 @@ can include directly your DUT file (uncomment):
 ```
 
 or you can store the path to your file into a `files.f` file, automatically
-recognized by SVUT.  Populate it with the files describing your IP. You can
+recognized by SVUT. Populate it with the files describing your IP. You can
 also specify include folder in this way:
 
 ```bash
@@ -135,9 +134,10 @@ waveform in GTKWave (uncomment):
 
 ```verilog
 initial $dumpvars(0, ffd_unit_test);
+initial $dumpfile("ffd_testbench.vcd");
 ```
 
-Two functions follow, setup() and teardown(). Use them to configure the
+Two functions follow, `setup()` and `teardown()`. Use them to configure the
 environment of the testcases:
 - setup() is called before each testcase execution
 - tearndown() after each testcase execution
@@ -164,7 +164,7 @@ A testsuite, comprising several `UNIT_TEST` is declared with another define:
 `TEST_SUITE_END
 ```
 
-To test the FFD, add the next line into setup() to drive the reset and init the
+To test the FFD, add the next line into `setup()` to drive the reset and init the
 FFD input:
 
 ```verilog
@@ -214,18 +214,16 @@ iverilog-vpi uart.c
 svutRun -vpi "-M. -muart" -define "PORT=3333" -t ./my_testbench.sv &
 ```
 
-Now you know the basics of SVUT. The generated testbench.sv provides prototypes of
+Now you know the basics of SVUT. The generated testbench provides prototypes of
 available macros. Try them and play around to test SVUT. You can find these
-files into the example folder. A simple makefile.example is present at the
-root level of this repo to launch the flow. It contains two targets, `make
-test` and `make gui`.
+files into the example folder.
 
 Enjoy!
 
 
 ## External tools
 
-To use `make gui` command, opening by default GTKwave, be sure to setup
+To use `gui` option, opening by default GTKwave, be sure to setup
 properly this tool in your path.  For Mac OS users, first install with brew:
 
 ```bash
