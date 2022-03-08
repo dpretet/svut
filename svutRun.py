@@ -68,18 +68,18 @@ def get_defines(defines):
     """
     Return a string with the list of defines ready to drop in icarus
     """
-    icarusdefs = ""
+    simdefs = ""
 
     if not defines:
-        return icarusdefs
+        return simdefs
 
     defs = defines.split(';')
 
     for _def in defs:
         if _def:
-            icarusdefs += "-D " + _def + " "
+            simdefs += "-D" + _def + " "
 
-    return icarusdefs
+    return simdefs
 
 
 def create_iverilog(args, test):
@@ -149,6 +149,9 @@ def create_verilator(args, test):
     cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
     cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
     cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
+
+    if args.define:
+        cmd += get_defines(args.define)
 
     if args.dotfile:
 
