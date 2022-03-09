@@ -85,6 +85,11 @@ main () {
     status=$((status + ret))
     [ "$ret" -eq 1 ] && echo "ERROR: testsuite_run failed"
 
+    bats "$DIR/testsuite_examples.sh"
+    ret=$?
+    status=$((status + ret))
+    [ "$ret" -eq 1 ] && echo "ERROR: testsuite_examples failed"
+
     if [ $status -eq 0 ]; then
         echo "INFO: Regression finished successfully. SVUT sounds alive ^^"
         exit 0
