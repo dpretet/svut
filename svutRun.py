@@ -206,7 +206,7 @@ def get_git_tag():
     Return current SVUT version
     """
 
-    file_path = os.path.dirname(os.path.abspath(__file__)) 
+    file_path = os.path.dirname(os.path.abspath(__file__))
     curr_path = os.getcwd()
     os.chdir(file_path)
 
@@ -304,11 +304,13 @@ if __name__ == '__main__':
         start = timer()
         print_event("Start", GIT_TAG)
 
+        cmdret = 0
         # Execute commands one by one
         for CMD in CMDS:
             print(CMD, flush=True)
             cmdret = os.system(CMD)
             if cmdret:
+                cmdret = 1
                 print("ERROR: Command failed: " + CMD)
                 break
 
