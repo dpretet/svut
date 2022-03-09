@@ -1,7 +1,8 @@
 # SystemVerilog Unit Test (SVUT)
 
 [![GitHub license](https://img.shields.io/github/license/dpretet/svut)](https://github.com/dpretet/svut/blob/master/LICENSE)
-![Github Actions](https://github.com/dpretet/svut/actions/workflows/ci.yaml/badge.svg)
+![Github Actions](https://github.com/dpretet/svut/actions/workflows/ci_ubuntu.yaml/badge.svg)
+![Github Actions](https://github.com/dpretet/svut/actions/workflows/ci_macos.yaml/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/dpretet/svut)](https://github.com/dpretet/svut/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dpretet/svut)](https://github.com/dpretet/svut/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/dpretet/svut)](https://github.com/dpretet/svut/network)

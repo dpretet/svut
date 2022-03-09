@@ -1,16 +1,18 @@
-name: SVUT
+name: macOS
 on: [push]
 jobs:
   lint-code:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt install pylint
+      - run: brew install pylint
       - run: cd test; ./lint.sh
   ci-tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt install iverilog
+      - run: brew install icarus-verilog
       - run: iverilog -V
+      - run: brew install verilator
+      - run: verilator -V
       - run: cd test; ./regression.sh

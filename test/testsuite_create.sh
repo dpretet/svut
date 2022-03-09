@@ -1,4 +1,4 @@
-test_create_adder_testbench { #@test
+test_create_adder_testbench() { #@test
 
     run "$DIR/../svutCreate" "$DIR/Adder.v"
 
@@ -10,13 +10,13 @@ test_create_adder_testbench { #@test
 }
 
 
-test_create_no_path { #@test
+test_create_no_path() { #@test
     run "$DIR/../svutCreate"
     [ "$status" -eq 1 ]
 }
 
 
-test_create_bad_input_path { #@test
+test_create_bad_input_path() { #@test
     run "$DIR/../svutCreate" "$DIR/Add__er.v"
     [ "$status" -eq 1 ]
 }

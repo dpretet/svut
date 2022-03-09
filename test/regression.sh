@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+# Global status, the global return code
+status=0
 
 #------------------------------------------------------------------------------
 # Bash compliant way to check a program is in PATH
 # https://stackoverflow.com/a/53798785
 #------------------------------------------------------------------------------
 function is_bin_in_path {
+
   builtin type -P "$1" &> /dev/null
 }
 
@@ -49,6 +52,20 @@ clean() {
     rm -fr bats
 }
 
+#------------------------------------------------------------------------------
+# Bats testsuite runner
+#------------------------------------------------------------------------------
+run_bats() {
+
+    echo "INFO: Execute $1"
+    echo ""
+
+    bats "$DIR/$1.sh"
+    ret=$?
+    status=$((status + ret))
+    [ "$ret" -ne 0 ] && echo -e "ERROR: $1 failed\n"
+    return
+}
 
 #------------------------------------------------------------------------------
 # Main function setting up the flow and launch Bats
@@ -56,11 +73,9 @@ clean() {
 main () {
 
     echo ""
-    echo "INFO: Start SVUT Regresion"
+    echo "INFO: Start SVUT Regression"
     echo ""
 
-    # Global status, the global return code
-    status=0
 
     # Get script's location
     export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -68,27 +83,17 @@ main () {
     # Remove dirties
     clean
 
-    # First check Bats is in PATH, else clone it locally and push it in PATH
+    # Check Bats is in PATH, else clone it locally and push it in PATH
     setup_bats
 
     echo ""
-    echo "INFO: Start Basts execution"
+    echo "INFO: Start Bats execution"
     echo ""
 
-    bats "$DIR/testsuite_create.sh"
-    ret=$?
-    status=$((status + ret))
-    [ "$ret" -eq 1 ] && echo "ERROR: testsuite_create failed"
-
-    bats "$DIR/testsuite_run.sh"
-    ret=$?
-    status=$((status + ret))
-    [ "$ret" -eq 1 ] && echo "ERROR: testsuite_run failed"
-
-    bats "$DIR/testsuite_examples.sh"
-    ret=$?
-    status=$((status + ret))
-    [ "$ret" -eq 1 ] && echo "ERROR: testsuite_examples failed"
+    # Execute all the testsuites
+    run_bats "testsuite_create"
+    run_bats "testsuite_run"
+    run_bats "testsuite_examples"
 
     if [ $status -eq 0 ]; then
         echo "INFO: Regression finished successfully. SVUT sounds alive ^^"
