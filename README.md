@@ -35,6 +35,10 @@ back-end.  Please install it with your favourite package manager and be sure to
 use a version greater or equal to v10.2. SVUT is tested with `v10.2` and cannot
 work with with lower version (`<= v9.x`).
 
+SVUT can also use [Verilator](https://github.com/verilator/verilator) but the support
+is more limited for the moment. A future release will fix that. An example to understand
+how to use it along Icarus can be found [here](https://github.com/dpretet/friscv/tree/master/test/common)
+
 
 ### How to use it
 
@@ -65,16 +69,17 @@ suffix and run all tests available. Multiple suffix patterns are [possible](http
 
 svutRun proposes several arguments, most optional:
 
-- `-test`: specify the testsuite to execute
-- `-f`: pass the fileset description
-- `sim`: specify the simulator, icarus or verilator
-- `-main`: specify the main.cpp file when using verilator
+- `-test`: specify the testsuite file path
+- `-f`: pass the fileset description, default is `files.f`
+- `-sim`: specify the simulator, `icarus` or `verilator`
+- `-main`: specify the main.cpp file when using verilator, default is `sim_main.cpp`
 - `-define`: pass verilog defines to the tool, like `-define "DEF1=2;DEF2;DEF3=3"`
-- `-vpi`: specify a compiled VPI, like `-vpi "-M. -mMyVPI"`
-- `-gui`: to launch GTKWave after execution
-- `-dry-run`: prepare the command to execute but just print them
+- `-vpi`: specify a compiled VPI, for instance `-vpi "-M. -mMyVPI"`
+- `-dry-run`: print the commands but don't execute them
 - `-include`: to pass include path, several can be passed like `-include folder1 folder2`
-- `-help`: to print help menu and exit
+- `-no-splash`: don't print SVUT splash banner, printed by default
+- `-compile-only`: just compile the testbench, don't execute it
+- `-run-only`: just execute the testbench, if no executable found, also build it
 
 
 # Tutorial
@@ -141,7 +146,7 @@ initial $dumpfile("ffd_testbench.vcd");
 Two functions follow, `setup()` and `teardown()`. Use them to configure the
 environment of the testcases:
 - setup() is called before each testcase execution
-- tearndown() after each testcase execution
+- teandown() after each testcase execution
 
 A testcase is enclosed between to specific defines:
 
@@ -152,7 +157,7 @@ A testcase is enclosed between to specific defines:
 ```
 
 TESTNAME is a string (optional), which will be displayed when test execution
-will start Then you can use the macros provided to display information,
+will start. Then you can use the macros provided to display information,
 warning, error and check some signals status and values. Each error found with
 macros increments an error counter which determine a testcase status. If the
 error counter is bigger than 0, the test is considered as failed.
@@ -185,15 +190,21 @@ Here is a basic unit test checking if the FFD output is 0 after reset. Once
 called `svutRun` in your shell, you should see something similar:
 
 ```
-INFO:     Testsuite execution started
+INFO: Start testsuite << FFD Testsuite >> (@ 0)
 
-INFO:     [100] Start TEST_IF_RESET_IS_APPLIED_WELL
-INFO:     [100] Test finished
-SUCCESS:  [100] Test successful
+INFO: Starting << Test 0: Check reset is applied >> (@ 0)
+I will test if Q output is 0 after reset (@ 100000)
+SUCCESS: Test 0 pass (@ 110000)
 
-INFO:     Testsuite execution finished @ 100
+INFO: Starting << Test 1: Drive the FFD >> (@ 110000)
+I will test if Q output is 1 after D assertion (@ 210000)
+SUCCESS: Test 1 pass (@ 236000)
 
-      -> STATUS:    1 /    1 test(s) passed
+INFO: Stop testsuite 'FFD Testsuite' (@ 236000)
+  - Warning number:  0
+  - Critical number: 0
+  - Error number:    0
+  - STATUS: 2/2 test(s) passed
 ```
 
 SVUT relies (optionally) on files.f to declare fileset and define. The user
@@ -220,33 +231,6 @@ available macros. Try them and play around to test SVUT. You can find these
 files into the example folder.
 
 Enjoy!
-
-
-## External tools
-
-To use `gui` option, opening by default GTKwave, be sure to setup
-properly this tool in your path.  For Mac OS users, first install with brew:
-
-```bash
-brew cask install gtkwave
-```
-
-Then setup your path to launch `gtkwave` from your shell (restart it)
-
-```bash
-export PATH="/Applications/gtkwave.app/Contents/Resources/bin/":$PATH
-```
-You may need to install Perl’s Switch module to run gtkwave’s command line tool.
-
-  https://ughe.github.io/2018/11/06/gtkwave-osx
-
-First enter in cpan (juste type cpan in your shell, or sudo cpan), then:
-
-```bash
-install Switch
-```
-
-GTKWave should open up without problems :)
 
 
 ## License

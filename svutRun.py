@@ -37,6 +37,59 @@ from datetime import timedelta
 SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
 
 
+def check_arguments(args):
+    """
+    Verify the arguments are correctly setup
+    """
+
+    if "iverilog" in args.simulator or "icarus" in args.simulator:
+        print_event("Run with Icarus Verilog")
+    elif "verilator" in args.simulator:
+        print_event("Run with Verilator")
+    else:
+        print_event("ERROR: Simulator not supported")
+        sys.exit(1)
+
+    if args.test == "":
+        print_event("ERROR: No testcase passed")
+        sys.exit(1)
+
+    if args.compile_only and args.run_only:
+        print("ERROR: Both compile-only and run-only are used")
+        sys.exit(1)
+
+    if (args.compile_only or args.run_only) and args.test=="all":
+        print_event("ERROR: compile-only or run-only can't be used with multiple testbenchs")
+        sys.exit(1)
+
+    return 0
+
+
+def check_tb_extension(test):
+    """
+    Check the extension to be sure it can be run
+    """
+    if test[-2:] != ".v" and test[-3:] != ".sv":
+        print("ERROR: Failed to find supported extension. Must use either *.v or *.sv")
+        sys.exit(1)
+
+
+def copy_svut_h():
+    """
+    First copy svut_h.sv macro in the user folder if not present or different
+    """
+
+    org_hfile = SCRIPTDIR + "/svut_h.sv"
+    curr_hfile = os.getcwd() + "/svut_h.sv"
+
+    if (not os.path.isfile(curr_hfile)) or\
+            (not filecmp.cmp(curr_hfile, org_hfile)):
+        print("INFO: Copy up-to-date version of svut_h.sv")
+        os.system("cp " + org_hfile + " " + os.getcwd())
+
+    return 0
+
+
 def find_unit_tests():
     """
     Parse all unit test files of the current folder
@@ -59,9 +112,38 @@ def find_unit_tests():
             for prefix in supported_prefix:
                 if _file.startswith(prefix):
                     files.append(_file)
+
     # Remove duplicated file if contains both prefix and suffix
     files = list(set(files))
     return files
+
+
+def print_banner(tag):
+    """
+    A banner printed when the flow starts
+    """
+    print()
+    print("""       ______    ____  ________""")
+    print("""      / ___/ |  / / / / /_  __/""")
+    print("""      \\__ \\| | / / / / / / /  """)
+    print("""     ___/ /| |/ / /_/ / / /   """)
+    print("""    /____/ |___/\\____/ /_/""")
+    print()
+    print(f"    {tag}")
+    print()
+
+    return 0
+
+def helper(tag):
+    """
+    Help menu
+    """
+
+    print_banner(tag)
+    print("    https://github.com/dpretet/svut")
+    print()
+
+    return 0
 
 
 def get_defines(defines):
@@ -86,53 +168,48 @@ def create_iverilog(args, test):
     """
     Create the Icarus Verilog command to launch the simulation
     """
-    # Remove the compiled file if it exists. That ensures that a compilation
-    # won't run an obsolete test.
-    cmds = ["rm -f icarus.out"]
-    cmd = "iverilog -g2012 -Wall -o icarus.out "
 
-    if args.define:
-        cmd += get_defines(args.define)
+    cmds = []
 
-    if args.dotfile:
+    if not os.path.isfile("svut.out"):
+        print_event("Testbench executable not found. Will build it")
+        args.run_only = False
 
-        dotfiles = ""
+    # Build testbench executable
+    if not args.run_only:
 
-        for dot in args.dotfile:
-            if os.path.isfile(dot):
-                dotfiles += dot + " "
+        cmd = "iverilog -g2012 -Wall -o svut.out "
 
-        if dotfiles:
-            cmd += "-f " + dotfiles + " "
+        if args.define:
+            cmd += get_defines(args.define)
 
-    if args.include:
-        incs = " ".join(args.include)
-        cmd += "-I " + incs + " "
+        if args.dotfile:
 
-    cmd += test + " "
+            dotfiles = ""
 
-    # Check the extension and extract test name
-    if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported extension. \
-               Must use either *.v or *.sv")
-        sys.exit(1)
+            for dot in args.dotfile:
+                if os.path.isfile(dot):
+                    dotfiles += dot + " "
 
-    cmds.append(cmd)
+            if dotfiles:
+                cmd += "-f " + dotfiles + " "
 
-    cmd = "vvp "
-    if args.vpi:
-        cmd += args.vpi + " "
-    cmd += "icarus.out "
+        if args.include:
+            incs = " ".join(args.include)
+            cmd += "-I " + incs + " "
 
-    if args.gui:
-        cmd += "-lxt;"
-    cmds.append(cmd)
+        cmd += test + " "
+        cmds.append(cmd)
 
-    if args.gui:
-        if os.path.isfile("wave.gtkw"):
-            cmds.append("gtkwave *.lxt wave.gtkw &")
-        else:
-            cmds.append("gtkwave *.lxt &")
+    # Execute testbench
+    if not args.compile_only:
+
+        cmd = "vvp "
+        if args.vpi:
+            cmd += args.vpi + " "
+
+        cmd += "svut.out "
+        cmds.append(cmd)
 
     return cmds
 
@@ -144,60 +221,64 @@ def create_verilator(args, test):
 
     testname = os.path.basename(test).split(".")[0]
 
-    cmds = ["rm -fr build"]
-    # build compilation command
-    cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
-    cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
-    cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
+    cmds = []
 
-    if args.define:
-        cmd += get_defines(args.define)
+    if not os.path.isfile("build/V" + testname + ".mk"):
+        print_event("Testbench executable not found. Will build it")
+        args.run_only = False
 
-    if args.dotfile:
 
-        dotfiles = ""
+    # Build testbench executable
+    if not args.run_only:
 
-        for dot in args.dotfile:
-            if os.path.isfile(dot):
-                dotfiles += dot + " "
+        cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
+        cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
+        cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
 
-        if dotfiles:
-            cmd += "-f " + dotfiles + " "
+        if args.define:
+            cmd += get_defines(args.define)
 
-    if args.include:
-        for inc in args.include:
-            cmd += "+incdir+" + inc + " "
+        if args.dotfile:
 
-    # Check the extension and extract test name
-    if test[-2:] != ".v" and test[-3:] != ".sv":
-        print("ERROR: failed to find supported extension. \
-               Must use either *.v or *.sv")
-        sys.exit(1)
+            dotfiles = ""
 
-    cmd += "-cc --exe --build -j --top-module " + testname + " "
-    cmd += test + " " + args.main
-    cmds.append(cmd)
+            for dot in args.dotfile:
+                if os.path.isfile(dot):
+                    dotfiles += dot + " "
+
+            if dotfiles:
+                cmd += "-f " + dotfiles + " "
+
+        if args.include:
+            for inc in args.include:
+                cmd += "+incdir+" + inc + " "
+
+        cmd += "-cc --exe --build -j --top-module " + testname + " "
+        cmd += test + " " + args.main
+        cmds.append(cmd)
+
+        cmd = "make -j -C build -f V" + testname + ".mk V" + testname
+        cmds.append(cmd)
 
     # Build execution command
-    cmd = "make -j -C build -f V" + testname + ".mk V" + testname
-    cmds.append(cmd)
-    cmd = "build/V" + testname
-    cmds.append(cmd)
+    if not args.run_only:
+        cmd = "build/V" + testname
+        cmds.append(cmd)
 
     return cmds
 
 
-def print_event(event, git_tag):
+def print_event(event):
     """
     Print an event during SVUT execution
+    TODO: manage severity/verbosity level
     """
 
+    time = datetime.datetime.now().time().strftime('%H:%M:%S')
+
+    print("SVUT (@ " + time + ") " + event, flush=True)
     print("")
-    print("------------------------------------------------")
-    print("SVUT " + git_tag)
-    print(event + " @ " + datetime.datetime.now().time().strftime('%H:%M:%S'))
-    print("------------------------------------------------")
-    print("")
+
     return 0
 
 
@@ -206,16 +287,16 @@ def get_git_tag():
     Return current SVUT version
     """
 
-    file_path = os.path.dirname(os.path.abspath(__file__))
     curr_path = os.getcwd()
-    os.chdir(file_path)
+    os.chdir(SCRIPTDIR)
 
     try:
         git_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"])
         git_tag = git_tag.strip().decode('ascii')
-    except:
+    except subprocess.CalledProcessError as err:
         print("WARNING: Can't get last git tag. Will return v0.0.0")
         git_tag = "v0.0.0"
+        print(err.output)
 
     os.chdir(curr_path)
     return git_tag
@@ -223,55 +304,81 @@ def get_git_tag():
 
 if __name__ == '__main__':
 
-    PARSER = argparse.ArgumentParser(description='SystemVerilog Unit Test')
+    PARSER = argparse.ArgumentParser(description='SystemVerilog Unit Test Flow')
 
-    PARSER.add_argument('-test', dest='test', type=str,
-                        default="all", nargs="*",
+    # SVUT options
+
+    PARSER.add_argument('-sim', dest='simulator', type=str, default="icarus",
+                        help='The simulator to use, icarus or verilator.')
+
+    PARSER.add_argument('-test', dest='test', type=str, default="all", nargs="*",
                         help='Unit test to run. A file or a list of files')
 
-    PARSER.add_argument('-f', dest='dotfile', type=str, default=["files.f"],
-                        nargs="*",
-                        help="A dot file (*.f) with incdir, define and files")
+    PARSER.add_argument('-no-splash', dest='splash', default=False, action='store_true',
+                        help='Don\'t print the banner when executing')
 
-    PARSER.add_argument('-sim', dest='simulator', type=str,
-                        default="icarus",
-                        help='The simulator to use.')
+    PARSER.add_argument('-version', dest='version', action='store_true',
+                        default="", help='Print version menu')
 
-    PARSER.add_argument('-main', dest='main', type=str,
-                        default="sim_main.cpp",
-                        help='Verilator main cpp file')
+    # Simulator options
 
-    PARSER.add_argument('-define', dest='define', type=str,
-                        default="",
-                        help='''A list of define separated by ;\
-                              ex: -define "DEF1=2;DEF2;DEF3=3"''')
-
-    PARSER.add_argument('-vpi', dest='vpi', type=str,
-                        default="",
-                        help='''A string of arguments passed as is to icarus, separated by a space\
-                              ex: -vpi "-M. -mMyVPI"''')
-
-    PARSER.add_argument('-gui', dest='gui',
-                        action='store_true',
-                        help='Active the lxt dump and open GTKWave')
-
-    PARSER.add_argument('-dry-run', dest='dry',
-                        action='store_true',
-                        help='Just print the command, don\'t execute. \
-                                For debug purpose only.')
+    PARSER.add_argument('-f', dest='dotfile', type=str, default=["files.f"], nargs="*",
+                        help="A dot file (*.f) with incdir, define and file path")
 
     PARSER.add_argument('-include', dest='include', type=str, nargs="*",
-                        default="", help='Specify an include folder')
+                        default="", help='Specify an include folder; can be used along a dotfile')
+
+    PARSER.add_argument('-main', dest='main', type=str, default="sim_main.cpp",
+                        help='Verilator main cpp file, like sim_main.cpp')
+
+    PARSER.add_argument('-define', dest='define', type=str, default="",
+                        help='''A list of define separated by ; \
+                            ex: -define "DEF1=2;DEF2;DEF3=3"''')
+
+    PARSER.add_argument('-vpi', dest='vpi', type=str, default="",
+                        help='''A string of arguments passed as is to Icarus (only), separated by a space\
+                            ex: -vpi "-M. -mMyVPI"''')
+
+    # SVUT Execution options
+
+    PARSER.add_argument('-run-only', dest='run_only', default=False, action='store_true',
+                        help='Only run existing executable but build it if not present')
+
+    PARSER.add_argument('-compile-only', dest='compile_only', default=False, action='store_true',
+                        help='Only prepare the testbench executable')
+
+    PARSER.add_argument('-dry-run', dest='dry', default=False, action='store_true',
+                        help='Just print the command, don\'t execute')
+
 
     ARGS = PARSER.parse_args()
 
+    GIT_TAG = get_git_tag()
+
+    if ARGS.version:
+        helper(GIT_TAG)
+        sys.exit(0)
+
+    if not ARGS.splash:
+        print_banner(GIT_TAG)
+
+    # Lower the simulator name to ease checking
+    ARGS.simulator = ARGS.simulator.lower()
+    # Check arguments consistency
+    check_arguments(ARGS)
+
+    # If the user doesn't specify a path, scan the folder to execute all testbenchs
     if ARGS.test == "all":
         ARGS.test = find_unit_tests()
 
+    # Copy svut_h.sv if not present or not up-to-date
+    copy_svut_h()
+
+    cmdret = 0
+
     for tests in ARGS.test:
 
-        # Lower the simulator name to ease process
-        ARGS.simulator = ARGS.simulator.lower()
+        check_tb_extension(tests)
 
         if "iverilog" in ARGS.simulator or "icarus" in ARGS.simulator:
             CMDS = create_iverilog(ARGS, tests)
@@ -279,43 +386,24 @@ if __name__ == '__main__':
         elif "verilator" in ARGS.simulator:
             CMDS = create_verilator(ARGS, tests)
 
-        else:
-            print("ERROR: Simulator not supported. Icarus is the only option")
-            sys.exit(1)
-
-        # First copy svut_h.sv macro in the user folder if not present or different
-        org_hfile = SCRIPTDIR + "/svut_h.sv"
-        curr_hfile = os.getcwd() + "/svut_h.sv"
-
-        if (not os.path.isfile(curr_hfile)) or\
-                (not filecmp.cmp(curr_hfile, org_hfile)):
-            print("INFO: Copy newest version of svut_h.sv")
-            os.system("cp " + org_hfile + " " + os.getcwd())
-
-        # Get git tag to print it during status
-        GIT_TAG = get_git_tag()
-
-        # Don't execute command, just print them for debug purpose
-        if ARGS.dry:
-            print("SVUT " + GIT_TAG + " dry-run: ")
-            print(CMDS, flush=True)
-            sys.exit(0)
-
         start = timer()
-        print_event("Start", GIT_TAG)
+        print_event("Start " + tests)
 
-        cmdret = 0
         # Execute commands one by one
         for CMD in CMDS:
-            print(CMD, flush=True)
-            cmdret = os.system(CMD)
-            if cmdret:
-                cmdret = 1
-                print("ERROR: Command failed: " + CMD)
-                break
 
-        end = timer()
-        print("Elapsed time:", timedelta(seconds=end-start))
+            print_event(CMD)
 
-        print_event("Stop", GIT_TAG)
-        sys.exit(cmdret)
+            if not ARGS.dry:
+                if os.system(CMD):
+                    cmdret += 1
+                    print("ERROR: Command failed: " + CMD)
+                    break
+
+        print_event("Stop " + tests)
+
+    end = timer()
+    print_event("Elapsed time: " + str(timedelta(seconds=end-start)))
+    print()
+
+    sys.exit(cmdret)

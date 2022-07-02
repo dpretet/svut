@@ -49,7 +49,6 @@ clean() {
     rm -f ./Adder_testbench.sv
     rm -f files.f
     rm -f sim_main.cpp
-    rm -fr bats
 }
 
 #------------------------------------------------------------------------------
@@ -93,6 +92,7 @@ main () {
     # Execute all the testsuites
     run_bats "testsuite_create"
     run_bats "testsuite_run"
+    run_bats "testsuite_run_args"
     run_bats "testsuite_examples"
 
     if [ $status -eq 0 ]; then

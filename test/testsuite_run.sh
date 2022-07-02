@@ -1,13 +1,13 @@
 test_run_ok_testsuite() { #@test
 
     run "$DIR/../svutRun" -test "$DIR/Adder_OK_testsuite.sv" -define "MYDEF1=5;MYDEF2"
-    [ $status -eq 0 ]
+    [ "$status" -eq 0 ]
 }
 
 test_run_ok_testsuite_failure() { #@test
 
     run "$DIR/../svutRun" -test "$DIR/Adder_OK_testsuite.sv"
-    [ $status -eq 1 ]
+    [ "$status" -eq 1 ]
 }
 
 

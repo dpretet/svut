@@ -3,7 +3,7 @@
 // Specify the module to load or on files.f
 `include "ffd.sv"
 
-`timescale 1 ns / 100 ps
+`timescale 1 ns / 1 ps
 
 module ffd_testbench();
 
@@ -50,7 +50,7 @@ module ffd_testbench();
     end
     endtask
 
-    `TEST_SUITE("FIRST_ONE")
+    `TEST_SUITE("FFD Testsuite")
 
     //    Available macros:"
     //
@@ -71,18 +71,18 @@ module ffd_testbench();
     //
     //    - `LAST_STATUS: tied to 1 is last macro did experience a failure, else tied to 0
 
-    `UNIT_TEST("CHECK RESET IS APPLIED")
+    `UNIT_TEST("Check reset is applied")
 
-        `INFO("I will test if q output is 0 after reset");
+        `MSG("I will test if Q output is 0 after reset");
         # 10;
         `FAIL_IF(q, "this flip-flop should be zeroed after reset");
         `ASSERT(q===0, "this flip-flop should be zeroed after reset");
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("DRIVE THE FFD")
+    `UNIT_TEST("Drive the FFD")
 
-        `INFO("I will test if q output is 1 after d assertion");
+        `MSG("I will test if Q output is 1 after D assertion");
         # 10;
         d = 1'b1;
         @ (posedge aclk);
