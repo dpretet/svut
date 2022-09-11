@@ -231,7 +231,7 @@ def create_verilator(args, test):
     # Build testbench executable
     if not args.run_only:
 
-        cmd = """verilator -Wall --trace --Mdir build +1800-2017ext+sv """
+        cmd = """verilator -Wall --trace --Mdir build +1800-2012ext+sv """
         cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
         cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
 
@@ -257,11 +257,8 @@ def create_verilator(args, test):
         cmd += test + " " + args.main
         cmds.append(cmd)
 
-        cmd = "make -j -C build -f V" + testname + ".mk V" + testname
-        cmds.append(cmd)
-
-    # Build execution command
-    if not args.run_only:
+    # Execution command
+    if not args.compile_only:
         cmd = "build/V" + testname
         cmds.append(cmd)
 
