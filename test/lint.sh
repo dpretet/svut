@@ -6,7 +6,7 @@ rm -f lint.txt; touch lint.txt
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "Lint svutRun.py"
-pylint -d C0301 -d C0103 $DIR/../svutRun.py | tee -a lint.txt
+pylint -d C0301 -d C0103 $DIR/../svut/svutRun.py | tee -a lint.txt
 ret=$?
 
 if [[ $ret != 0 ]]; then
@@ -16,7 +16,7 @@ else
 fi
 
 echo "Lint svutCreate.py"
-pylint -d C0301 -d C0103 $DIR/../svutCreate.py | tee -a lint.txt
+pylint -d C0301 -d C0103 $DIR/../svut/svutCreate.py | tee -a lint.txt
 ret=$?
 
 if [[ $ret != 0 ]]; then
