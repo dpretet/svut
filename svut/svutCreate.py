@@ -31,7 +31,6 @@ import re
 from string import Template
 from pathlib import Path
 
-
 SCRIPTDIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 def parse_verilog(verilog):
