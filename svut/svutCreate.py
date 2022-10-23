@@ -31,8 +31,7 @@ import re
 from string import Template
 from pathlib import Path
 
-SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
-
+SCRIPTDIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 def parse_verilog(verilog):
 
@@ -265,8 +264,7 @@ def print_recommandation(name):
     print("")
 
 
-if __name__ == '__main__':
-
+def main():
     # Handle the input arguments. A file must be passed
     # and exists in file system
     FILE_NAME = ""
@@ -309,3 +307,7 @@ if __name__ == '__main__':
     os.system("touch files.f")
 
     sys.exit(0)
+
+if __name__ == '__main__':
+    main()
+

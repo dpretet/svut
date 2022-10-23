@@ -298,9 +298,7 @@ def get_git_tag():
     os.chdir(curr_path)
     return git_tag
 
-
-if __name__ == '__main__':
-
+def main():
     PARSER = argparse.ArgumentParser(description='SystemVerilog Unit Test Flow')
 
     # SVUT options
@@ -404,3 +402,6 @@ if __name__ == '__main__':
     print()
 
     sys.exit(cmdret)
+
+if __name__ == '__main__':
+    main()
