@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "svut"
-version = "1.6.1"
-authors = [
-  { name="Damien Pretet", email="damien.pretet@me.com" },
-]
+version = "1.8.0"
+authors = [{ name="Damien Pretet", email="damien.pretet@me.com" }]
 description = "SystemVerilog Unit Test (SVUT)"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.7"
+keywords = ["verilog", "systemverilog", "testing"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

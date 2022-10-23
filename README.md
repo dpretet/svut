@@ -19,7 +19,17 @@ Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
 
 Hope it can help you!
 
-### How to install it
+### How to Install
+
+#### Pypi
+
+SVUT is availble on Pypi and can be installed as following:
+
+```bash
+pip3 install svut
+```
+
+#### Git
 
 Git clone the repository in a path. Set up the SVUT environment variable
 and add SVUT to `$PATH`:
