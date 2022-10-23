@@ -79,7 +79,14 @@ def copy_svut_h():
     First copy svut_h.sv macro in the user folder if not present or different
     """
 
-    org_hfile = SCRIPTDIR + "/svut_h.sv"
+    # Resolve first the real place h file is located
+    # The place is different if the python is directly call or if
+    # using the symlink
+    org_hfile = SCRIPTDIR + "/svut/svut_h.sv"
+
+    if not os.path.isfile(org_hfile):
+        org_hfile =  SCRIPTDIR + "/svut_h.sv"
+
     curr_hfile = os.getcwd() + "/svut_h.sv"
 
     if (not os.path.isfile(curr_hfile)) or\
@@ -115,6 +122,11 @@ def find_unit_tests():
 
     # Remove duplicated file if contains both prefix and suffix
     files = list(set(files))
+
+    if not files:
+        print("ERROR: Can't find tests to unr")
+        sys.exit(1)
+
     return files
 
 
@@ -298,101 +310,107 @@ def get_git_tag():
     os.chdir(curr_path)
     return git_tag
 
+
 def main():
-    PARSER = argparse.ArgumentParser(description='SystemVerilog Unit Test Flow')
+    """
+    Main function
+    """
+
+    parser = argparse.ArgumentParser(description='SystemVerilog Unit Test Flow')
 
     # SVUT options
 
-    PARSER.add_argument('-sim', dest='simulator', type=str, default="icarus",
+    parser.add_argument('-sim', dest='simulator', type=str, default="icarus",
                         help='The simulator to use, icarus or verilator.')
 
-    PARSER.add_argument('-test', dest='test', type=str, default="all", nargs="*",
+    parser.add_argument('-test', dest='test', type=str, default="all", nargs="*",
                         help='Unit test to run. A file or a list of files')
 
-    PARSER.add_argument('-no-splash', dest='splash', default=False, action='store_true',
+    parser.add_argument('-no-splash', dest='splash', default=False, action='store_true',
                         help='Don\'t print the banner when executing')
 
-    PARSER.add_argument('-version', dest='version', action='store_true',
+    parser.add_argument('-version', dest='version', action='store_true',
                         default="", help='Print version menu')
 
     # Simulator options
 
-    PARSER.add_argument('-f', dest='dotfile', type=str, default=["files.f"], nargs="*",
+    parser.add_argument('-f', dest='dotfile', type=str, default=["files.f"], nargs="*",
                         help="A dot file (*.f) with incdir, define and file path")
 
-    PARSER.add_argument('-include', dest='include', type=str, nargs="*",
+    parser.add_argument('-include', dest='include', type=str, nargs="*",
                         default="", help='Specify an include folder; can be used along a dotfile')
 
-    PARSER.add_argument('-main', dest='main', type=str, default="sim_main.cpp",
+    parser.add_argument('-main', dest='main', type=str, default="sim_main.cpp",
                         help='Verilator main cpp file, like sim_main.cpp')
 
-    PARSER.add_argument('-define', dest='define', type=str, default="",
+    parser.add_argument('-define', dest='define', type=str, default="",
                         help='''A list of define separated by ; \
                             ex: -define "DEF1=2;DEF2;DEF3=3"''')
 
-    PARSER.add_argument('-vpi', dest='vpi', type=str, default="",
-                        help='''A string of arguments passed as is to Icarus (only), separated by a space\
-                            ex: -vpi "-M. -mMyVPI"''')
+    parser.add_argument('-vpi', dest='vpi', type=str, default="",
+                        help='''A string of arguments passed as is to Icarus (only), separated \
+                                by a space ex: -vpi "-M. -mMyVPI"''')
 
     # SVUT Execution options
 
-    PARSER.add_argument('-run-only', dest='run_only', default=False, action='store_true',
+    parser.add_argument('-run-only', dest='run_only', default=False, action='store_true',
                         help='Only run existing executable but build it if not present')
 
-    PARSER.add_argument('-compile-only', dest='compile_only', default=False, action='store_true',
+    parser.add_argument('-compile-only', dest='compile_only', default=False, action='store_true',
                         help='Only prepare the testbench executable')
 
-    PARSER.add_argument('-dry-run', dest='dry', default=False, action='store_true',
+    parser.add_argument('-dry-run', dest='dry', default=False, action='store_true',
                         help='Just print the command, don\'t execute')
 
 
-    ARGS = PARSER.parse_args()
+    args = parser.parse_args()
 
-    GIT_TAG = get_git_tag()
+    git_tag = get_git_tag()
 
-    if ARGS.version:
-        helper(GIT_TAG)
+    if args.version:
+        helper(git_tag)
         sys.exit(0)
 
-    if not ARGS.splash:
-        print_banner(GIT_TAG)
+    if not args.splash:
+        print_banner(git_tag)
 
     # Lower the simulator name to ease checking
-    ARGS.simulator = ARGS.simulator.lower()
+    args.simulator = args.simulator.lower()
     # Check arguments consistency
-    check_arguments(ARGS)
+    check_arguments(args)
 
     # If the user doesn't specify a path, scan the folder to execute all testbenchs
-    if ARGS.test == "all":
-        ARGS.test = find_unit_tests()
+    if args.test == "all":
+        args.test = find_unit_tests()
 
     # Copy svut_h.sv if not present or not up-to-date
     copy_svut_h()
 
     cmdret = 0
 
-    for tests in ARGS.test:
+    start = timer()
+
+    for tests in args.test:
 
         check_tb_extension(tests)
 
-        if "iverilog" in ARGS.simulator or "icarus" in ARGS.simulator:
-            CMDS = create_iverilog(ARGS, tests)
+        if "iverilog" in args.simulator or "icarus" in args.simulator:
+            cmds = create_iverilog(args, tests)
 
-        elif "verilator" in ARGS.simulator:
-            CMDS = create_verilator(ARGS, tests)
+        elif "verilator" in args.simulator:
+            cmds = create_verilator(args, tests)
 
-        start = timer()
         print_event("Start " + tests)
 
         # Execute commands one by one
-        for CMD in CMDS:
+        for cmd in cmds:
 
-            print_event(CMD)
+            print_event(cmd)
 
-            if not ARGS.dry:
-                if os.system(CMD):
+            if not args.dry:
+                if os.system(cmd):
                     cmdret += 1
-                    print("ERROR: Command failed: " + CMD)
+                    print("ERROR: Command failed: " + cmd)
                     break
 
         print_event("Stop " + tests)

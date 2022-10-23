@@ -40,6 +40,13 @@ test_run_not_a_tb_path() { #@test
     [ "$status" -eq 1 ]
 }
 
+test_run_no_tests() { #@test
+
+    run "cd" "-" "&&" "./svutRun"
+    [ "$status" -eq 1 ]
+}
+
+
 test_run_dry_run() { #@test
 
     run "$DIR/../svut/svutRun.py" "-test" "../example/ffd_testbench.sv" "-dry-run"
