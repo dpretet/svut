@@ -33,9 +33,9 @@ import subprocess
 import datetime
 from timeit import default_timer as timer
 from datetime import timedelta
+from pathlib import Path, PosixPath
 
 SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
-
 
 def check_arguments(args):
     """
@@ -50,9 +50,18 @@ def check_arguments(args):
         print_event("ERROR: Simulator not supported")
         sys.exit(1)
 
-    if args.test == "":
-        print_event("ERROR: No testcase passed")
+    if not args.test:
+        print_event("ERROR: No testcase or path to testcases passed")
         sys.exit(1)
+
+    for path in args.test:
+        error = False
+        if not path.exists():
+            error = True
+            print_event("ERROR: %s does not exist" % path)
+
+    if error:
+        sys.exit()
 
     if args.compile_only and args.run_only:
         print("ERROR: Both compile-only and run-only are used")
@@ -65,11 +74,12 @@ def check_arguments(args):
     return 0
 
 
-def check_tb_extension(test):
+def check_tb_extension(test : PosixPath):
     """
     Check the extension to be sure it can be run
     """
-    if test[-2:] != ".v" and test[-3:] != ".sv":
+    print("BLAA", test)
+    if test.suffix not in [".v",".sv"]:
         print("ERROR: Failed to find supported extension. Must use either *.v or *.sv")
         sys.exit(1)
 
@@ -97,28 +107,31 @@ def copy_svut_h():
     return 0
 
 
-def find_unit_tests():
+def find_unit_tests(test_dir : PosixPath):
     """
     Parse all unit test files of the current folder
     and return a list of available tests
     """
 
     supported_prefix = ["tb_", "ts_", "testbench_", "testsuite_", "unit_test_"]
-    supported_suffix = ["_unit_test.v", "_unit_test.sv",
-                        "_testbench.v", "_testbench.sv",
-                        "_testsuite.v", "_testsuite.sv",
-                        "_tb.v", "_tb.sv", "_ts.v", "_ts.sv"]
+    supported_suffix = ["_unit_test", "_testbench","_testsuite", "_tb", "_ts"]
     files = []
+
     # Parse the current folder
-    for _file in os.listdir(os.getcwd()):
+    for path in Path(test_dir).iterdir():
         # Check only the files
-        if os.path.isfile(_file):
-            for suffix in supported_suffix:
-                if _file.endswith(suffix):
-                    files.append(_file)
-            for prefix in supported_prefix:
-                if _file.startswith(prefix):
-                    files.append(_file)
+        if not path.is_file():
+            continue
+
+        # Files not ending with .sv or .v are skipped
+        if path.suffix not in [".sv",".v"]:
+            continue
+
+        if path.stem.startswith(tuple(supported_prefix)):
+            files.append(path)
+
+        if path.stem.endswith(tuple(supported_suffix)):
+            files.append(path)
 
     # Remove duplicated file if contains both prefix and suffix
     files = list(set(files))
@@ -310,6 +323,12 @@ def get_git_tag():
     os.chdir(curr_path)
     return git_tag
 
+def get_test_dir(input: list) -> PosixPath:
+    if len(input) == 1 and input[0].is_dir():
+        return input[0]
+
+    return None
+
 
 def main():
     """
@@ -323,8 +342,8 @@ def main():
     parser.add_argument('-sim', dest='simulator', type=str, default="icarus",
                         help='The simulator to use, icarus or verilator.')
 
-    parser.add_argument('-test', dest='test', type=str, default="all", nargs="*",
-                        help='Unit test to run. A file or a list of files')
+    parser.add_argument('-test', dest='test', type=str, default=[os.getcwd()], nargs="*",
+                        help='Unit test to run. A file,list of files or path to test files')
 
     parser.add_argument('-no-splash', dest='splash', default=False, action='store_true',
                         help='Don\'t print the banner when executing')
@@ -364,6 +383,7 @@ def main():
 
 
     args = parser.parse_args()
+    args.test = [Path(x) for x in args.test]
 
     git_tag = get_git_tag()
 
@@ -376,12 +396,16 @@ def main():
 
     # Lower the simulator name to ease checking
     args.simulator = args.simulator.lower()
+
     # Check arguments consistency
     check_arguments(args)
 
-    # If the user doesn't specify a path, scan the folder to execute all testbenchs
-    if args.test == "all":
-        args.test = find_unit_tests()
+    # If the user specifies a directory to look for files, test_dir will point to this directory
+    # If the user does not specify any test files or directy at all, test_dir will point to the CWD
+    # If the user specifies one or more test files, test_dir is none and no searching will take place
+    test_dir = get_test_dir(args.test)
+    if test_dir:
+        args.test = find_unit_tests(test_dir)
 
     # Copy svut_h.sv if not present or not up-to-date
     copy_svut_h()
@@ -390,17 +414,18 @@ def main():
 
     start = timer()
 
-    for tests in args.test:
+    test : PosixPath
+    for test in args.test:
 
-        check_tb_extension(tests)
+        check_tb_extension(test)
 
         if "iverilog" in args.simulator or "icarus" in args.simulator:
-            cmds = create_iverilog(args, tests)
+            cmds = create_iverilog(args, str(test))
 
         elif "verilator" in args.simulator:
-            cmds = create_verilator(args, tests)
+            cmds = create_verilator(args, str(test))
 
-        print_event("Start " + tests)
+        print_event("Start " + test.name)
 
         # Execute commands one by one
         for cmd in cmds:
@@ -413,7 +438,7 @@ def main():
                     print("ERROR: Command failed: " + cmd)
                     break
 
-        print_event("Stop " + tests)
+        print_event("Stop " + test.name)
 
     end = timer()
     print_event("Elapsed time: " + str(timedelta(seconds=end-start)))
