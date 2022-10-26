@@ -78,7 +78,6 @@ def check_tb_extension(test : PosixPath):
     """
     Check the extension to be sure it can be run
     """
-    print("BLAA", test)
     if test.suffix not in [".v",".sv"]:
         print("ERROR: Failed to find supported extension. Must use either *.v or *.sv")
         sys.exit(1)
@@ -318,7 +317,6 @@ def get_git_tag():
     except subprocess.CalledProcessError as err:
         print("WARNING: Can't get last git tag. Will return v0.0.0")
         git_tag = "v0.0.0"
-        print(err.output)
 
     os.chdir(curr_path)
     return git_tag
