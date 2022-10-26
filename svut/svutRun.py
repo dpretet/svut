@@ -124,7 +124,7 @@ def find_unit_tests():
     files = list(set(files))
 
     if not files:
-        print("ERROR: Can't find tests to unr")
+        print("ERROR: Can't find tests to run")
         sys.exit(1)
 
     return files
