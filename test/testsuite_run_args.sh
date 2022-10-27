@@ -1,4 +1,4 @@
-test_run_wrong_run_compile_only() { #@test
+test_run_wrong_run_only_compile_only() { #@test
 
     run "$DIR/../svut/svutRun.py" "-run-only" "-compile-only"
     [ "$status" -eq 1 ]
@@ -7,13 +7,13 @@ test_run_wrong_run_compile_only() { #@test
 test_run_all_with_run_only() { #@test
 
     run "$DIR/../svut/svutRun.py" "-run-only"
-    [ "$status" -eq 1 ]
+    [ "$status" -eq 0 ]
 }
 
 test_run_all_with_compile_only() { #@test
 
     run "$DIR/../svut/svutRun.py" "-compile-only"
-    [ "$status" -eq 1 ]
+    [ "$status" -eq 2 ]
 }
 
 test_run_wrong_simulator() { #@test
