@@ -79,7 +79,7 @@ suffix and run all tests available. Multiple suffix patterns are [possible](http
 
 svutRun proposes several arguments, most optional:
 
-- `-test`: specify the testsuite file path
+- `-test`: specify the testsuite file path or a folder containing tests
 - `-f`: pass the fileset description, default is `files.f`
 - `-sim`: specify the simulator, `icarus` or `verilator`
 - `-main`: specify the main.cpp file when using verilator, default is `sim_main.cpp`
