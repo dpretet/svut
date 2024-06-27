@@ -72,7 +72,7 @@ module Adder_unit_test_KO;
 
         /* Available flag:
 
-               - `LAST_STATUS: tied to 1 is last macros has been asserted, else tied to 0
+               - `LAST_STATUS: tied to 1 if last macros has been asserted, else tied to 0
         */
 
     `UNIT_TEST("Macro test")

@@ -34,7 +34,7 @@ module Adder
         end
         else begin
             if (clr == 1'b1)
-                out <= 8'b0;
+                out <= {WIDTH{1'b0}};
             else if (inc == 1'b1)
                 out <= out + 1'b1;
         end
