@@ -199,23 +199,10 @@ and into the testcase:
 Here is a basic unit test checking if the FFD output is 0 after reset. Once
 called `svutRun` in your shell, you should see something similar:
 
-```
-INFO: Start testsuite << FFD Testsuite >> (@ 0)
-
-INFO: Starting << Test 0: Check reset is applied >> (@ 0)
-I will test if Q output is 0 after reset (@ 100000)
-SUCCESS: Test 0 pass (@ 110000)
-
-INFO: Starting << Test 1: Drive the FFD >> (@ 110000)
-I will test if Q output is 1 after D assertion (@ 210000)
-SUCCESS: Test 1 pass (@ 236000)
-
-INFO: Stop testsuite 'FFD Testsuite' (@ 236000)
-  - Warning number:  0
-  - Critical number: 0
-  - Error number:    0
-  - STATUS: 2/2 test(s) passed
-```
+<p align="center">
+  <!--img width="100" height="100" src=""-->
+  <img src="readme.jpg">
+</p>
 
 SVUT relies (optionally) on files.f to declare fileset and define. The user
 can also choose to pass define in the command line:

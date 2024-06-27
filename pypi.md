@@ -9,10 +9,13 @@
 ```bash
 
 # Install the necessary tools
-python -m pip install build twine
+# For linux
+python3 -m pip install --upgrade build
+# For Macos with brew
+brew install python-build
 
 # Build the package
-python3 -m build
+python3.10 -m build
 
 # Check the package
 twine check dist/*
@@ -20,6 +23,5 @@ twine check dist/*
 # Upload to Pypi once registred
 twine upload -r pypi dist/*
 ```
-
 
 https://realpython.com/pypi-publish-python-package/#publish-your-package-to-pypi
