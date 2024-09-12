@@ -30,6 +30,7 @@ import sys
 import argparse
 import filecmp
 import subprocess
+import shutil
 import datetime
 from timeit import default_timer as timer
 from datetime import timedelta
@@ -307,6 +308,11 @@ def get_git_tag():
     """
     Return current SVUT version
     """
+
+    # Handles an environment without Git installed
+    git_path = shutil.which("git")
+    if git_path is None:
+        return ""
 
     curr_path = os.getcwd()
     os.chdir(SCRIPTDIR)
