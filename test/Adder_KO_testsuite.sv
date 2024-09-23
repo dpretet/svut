@@ -95,6 +95,8 @@ module Adder_unit_test_KO;
         `FAIL_IF_NOT_EQUAL(out, 8'd0);
         `INFO("Test FAIL_IF_NOT_EQUAL");
         `FAIL_IF_EQUAL(out, 8'd1);
+        `INFO("Test ASSERT");
+        `ASSERT(inc === 1'b1);
 
         `ERROR("Test finished");
 
