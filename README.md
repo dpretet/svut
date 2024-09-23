@@ -6,15 +6,15 @@
 [![GitHub issues](https://img.shields.io/github/issues/dpretet/svut)](https://github.com/dpretet/svut/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dpretet/svut)](https://github.com/dpretet/svut/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/dpretet/svut)](https://github.com/dpretet/svut/network)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/dpretet/svut?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fdpretet%2Fsvut)
 
 
 ## Introduction
 
-SVUT is a very simple flow to create a Verilog/SystemVerilog unit test.  It is
+SVUT is a very simple flow to create a Verilog/SystemVerilog unit test. It is
 widely inspired by [SVUnit](http://agilesoc.com/open-source-projects/svunit/),
 but it's written in python and run with [Icarus
-Verilog](http://iverilog.icarus.com/). SVUT follows KISS principle: [Keep It
+Verilog](http://iverilog.icarus.com/) or
+[Verilator](https://www.veripool.org/verilator/). SVUT follows KISS principle: [Keep It
 Simple, Stupid](https://en.wikipedia.org/wiki/KISS_principle).
 
 Hope it can help you!
@@ -23,7 +23,7 @@ Hope it can help you!
 
 #### Pypi
 
-SVUT is availble on Pypi and can be installed as following:
+SVUT is available on Pypi and can be installed as following:
 
 ```bash
 pip3 install svut
@@ -41,17 +41,16 @@ export PATH=$SVUT:$PATH
 ```
 
 SVUT relies on [Icarus Verilog](http://iverilog.icarus.com/) as simulation
-back-end.  Please install it with your favourite package manager and be sure to
+back-end. Please install it with your favourite package manager and be sure to
 use a version greater or equal to v10.2. SVUT is tested with `v10.2` and cannot
 work with with lower version (`<= v9.x`).
 
-SVUT can also use [Verilator](https://github.com/verilator/verilator) but the support
-is more limited for the moment. A future release will fix that. An example to understand
-how to use it along Icarus can be found [here](https://github.com/dpretet/friscv/tree/master/test/common)
+SVUT can also use [Verilator](https://github.com/verilator/verilator) with a limited support
+for the moment. A future release will improve it, with example & tutorial. SVUT is tested with
+version `>= v4`.
 
 
 ### How to use it
-
 
 To create a unit test of a verilog module, call the command:
 
@@ -61,8 +60,13 @@ svutCreate your_file.v
 
 No argument is required. SVUT will create "your_file_testbench.sv" which contains your module
 instanciated and a place to write your testcase(s). Some codes are also commented to describe the
-different macros and how to create a clock or dump a VCD for GTKWave. To run a test, call the
-command:
+different macros and how to create a clock or dump a VCD for
+[GTKWave](https://gtkwave.sourceforge.net) or
+[Surfer](https://gitlab.com/surfer-project/surfer). A c++ file being the verilator
+top level is also generated (`sim_main.cpp`). It can be ignored if you don't use Verilator.
+An example to understand how to use can be found [here](https://github.com/dpretet/friscv/tree/master/test/common)
+
+To run a test, call the command:
 
 ```bash
 svutRun -test your_file_testbench.sv
@@ -75,7 +79,8 @@ svutRun
 ```
 
 SVUT will scan your current folder, search for the files with "\_testbench.sv"
-suffix and run all tests available. Multiple suffix patterns are [possible](https://github.com/dpretet/svut/blob/master/svutRun.py#L46).
+suffix and run all tests available. Multiple suffix patterns are
+[possible](https://github.com/dpretet/svut/blob/master/svutRun.py#L46).
 
 svutRun proposes several arguments, most optional:
 
@@ -91,6 +96,7 @@ svutRun proposes several arguments, most optional:
 - `-compile-only`: just compile the testbench, don't execute it
 - `-run-only`: just execute the testbench, if no executable found, also build it
 
+All these arguments are common for both the simulators.
 
 # Tutorial
 
@@ -121,7 +127,7 @@ Then run:
 svutCreate ffd.v
 ```
 
-ffd_testbench.v has been dropped in the folder from you called svutCreate. It
+ffd\_testbench.v has been dropped in the folder from you called svutCreate. It
 contains all you need to start populating your testcases. In the header, you
 can include directly your DUT file (uncomment):
 
@@ -142,7 +148,7 @@ Right after the module instance, you can use the example to generate a clock
 
 ```verilog
 initial aclk = 0;
-always #2 aclk <= ~aclk;
+always #2 aclk <= !aclk;
 ```
 
 Next line explains how to dump your signals values into a VCD file to open a
@@ -155,10 +161,10 @@ initial $dumpfile("ffd_testbench.vcd");
 
 Two functions follow, `setup()` and `teardown()`. Use them to configure the
 environment of the testcases:
-- setup() is called before each testcase execution
-- teandown() after each testcase execution
+- `setup()` is called before each testcase execution
+- `teardown()` is called after each testcase execution
 
-A testcase is enclosed between to specific defines:
+A testcase is enclosed between two specific defines:
 
 ```verilog
 `UNIT_TEST("TESTNAME")
@@ -166,11 +172,11 @@ A testcase is enclosed between to specific defines:
 `UNIT_TEST_END
 ```
 
-TESTNAME is a string (optional), which will be displayed when test execution
+`TESTNAME` is a string, which will be displayed when test execution
 will start. Then you can use the macros provided to display information,
 warning, error and check some signals status and values. Each error found with
-macros increments an error counter which determine a testcase status. If the
-error counter is bigger than 0, the test is considered as failed.
+macros increments an error counter which determine a testsuite status. If the
+error counter is bigger than `0`, the test is considered as failed.
 
 A testsuite, comprising several `UNIT_TEST` is declared with another define:
 
@@ -196,7 +202,7 @@ and into the testcase:
 `FAIL_IF(q);
 ```
 
-Here is a basic unit test checking if the FFD output is 0 after reset. Once
+Here is a basic unit test checking if the FFD output is `0` after reset. Once
 called `svutRun` in your shell, you should see something similar:
 
 <p align="center">
@@ -204,15 +210,25 @@ called `svutRun` in your shell, you should see something similar:
   <img src="readme.jpg">
 </p>
 
-SVUT relies (optionally) on files.f to declare fileset and define. The user
-can also choose to pass define in the command line:
+SVUT relies (optionally) on files.f to declare the fileset and define. Follows an example:
+
+```
+...
++define+MY_DEFINE_SIM1
++define+MY_DEFINE_SIM2=723
+./ffd.sv
++incdir+$HOME/work/mylib
+...
+```
+
+The user can also choose to pass define in the command line, common for both the simulator:
 
 ```bash
 svutRun -test my_testbench.sv -define "DEF1=1;DEF2;DEF3=3"
 ```
 
 SVUT doesn't check possible collision between define passed in command line
-and the others defined in files.f. Double check that point if unexpected
+and the others defined in `files.f`. Double check that point if unexpected
 behavior occurs during testbench.
 
 Finally, SVUT supports VPI for Icarus. Follow an example to compile and set up
