@@ -51,7 +51,7 @@ ${module_inst}
     //    - `FAIL_IF_EQUAL(aSignal, 23):       Increment error counter if evaluation is equal
     //    - `FAIL_IF_NOT_EQUAL(aSignal, 45):   Increment error counter if evaluation is not equal
     //    - `ASSERT(aSignal):                  Increment error counter if evaluation is not true
-    //    - `ASSERT((aSignal == 0)):           Increment error counter if evaluation is not true
+    //    - `ASSERT(aSignal == 0):           Increment error counter if evaluation is not true
     //
     //  Available flag:
     //
