@@ -129,7 +129,7 @@ endfunction
 `define FAIL_IF_NOT(exp, message="") \
     svut_status = 0; \
     svut_msg = create_msg("FAIL_IF_NOT", message); \
-    if (!exp) begin \
+    if (!(exp)) begin \
         `ERROR(svut_msg); \
         svut_status = 1; \
     end
@@ -156,7 +156,7 @@ endfunction
 `define ASSERT(exp, message="") \
     svut_status = 0; \
     svut_msg = create_msg("ASSERT", message); \
-    if (!exp) begin \
+    if (!(exp)) begin \
         `ERROR(svut_msg); \
         svut_status = 1; \
     end
