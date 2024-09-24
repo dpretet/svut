@@ -12,7 +12,7 @@ ${module_inst}
 
     // To create a clock:
     // initial aclk = 0;
-    // always #2 aclk = ~aclk;
+    // always #2 aclk = !aclk;
 
     // To dump data for visualization:
     // initial begin

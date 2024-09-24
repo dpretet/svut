@@ -43,7 +43,7 @@ export PATH=$SVUT:$PATH
 SVUT relies on [Icarus Verilog](http://iverilog.icarus.com/) as simulation
 back-end. Please install it with your favourite package manager and be sure to
 use a version greater or equal to v10.2. SVUT is tested with `v10.2` and cannot
-work with with lower version (`<= v9.x`).
+work with lower version `<= v9.x`.
 
 SVUT can also use [Verilator](https://github.com/verilator/verilator) with a limited support
 for the moment. A future release will improve it, with example & tutorial. SVUT is tested with
@@ -62,7 +62,7 @@ No argument is required. SVUT will create "your_file_testbench.sv" which contain
 instanciated and a place to write your testcase(s). Some codes are also commented to describe the
 different macros and how to create a clock or dump a VCD for
 [GTKWave](https://gtkwave.sourceforge.net) or
-[Surfer](https://gitlab.com/surfer-project/surfer). A c++ file being the verilator
+[Surfer](https://gitlab.com/surfer-project/surfer). A C++ file being the verilator
 top level is also generated (`sim_main.cpp`). It can be ignored if you don't use Verilator.
 An example to understand how to use can be found [here](https://github.com/dpretet/friscv/tree/master/test/common)
 
@@ -78,16 +78,16 @@ or simply `svutRun` to execute all testbenchs in the current folder.
 svutRun
 ```
 
-SVUT will scan your current folder, search for the files with "\_testbench.sv"
+SVUT will scan your current folder, search for the files with `_testbench.sv`
 suffix and run all tests available. Multiple suffix patterns are
-[possible](https://github.com/dpretet/svut/blob/master/svutRun.py#L46).
+[possible](https://github.com/dpretet/svut/blob/master/svut/svutRun.py#L46).
 
 svutRun proposes several arguments, most optional:
 
 - `-test`: specify the testsuite file path or a folder containing tests
 - `-f`: pass the fileset description, default is `files.f`
 - `-sim`: specify the simulator, `icarus` or `verilator`
-- `-main`: specify the main.cpp file when using verilator, default is `sim_main.cpp`
+- `-main`: specify the C++ main file when using verilator, default is `sim_main.cpp`
 - `-define`: pass verilog defines to the tool, like `-define "DEF1=2;DEF2;DEF3=3"`
 - `-vpi`: specify a compiled VPI, for instance `-vpi "-M. -mMyVPI"`
 - `-dry-run`: print the commands but don't execute them
@@ -144,11 +144,11 @@ also specify include folder in this way:
 ```
 
 Right after the module instance, you can use the example to generate a clock
-(uncomment):
+(to uncomment):
 
 ```verilog
 initial aclk = 0;
-always #2 aclk <= !aclk;
+always #2 aclk = !aclk;
 ```
 
 Next line explains how to dump your signals values into a VCD file to open a
@@ -172,13 +172,13 @@ A testcase is enclosed between two specific defines:
 `UNIT_TEST_END
 ```
 
-`TESTNAME` is a string, which will be displayed when test execution
+`TESTNAME` is a string which will be displayed when test execution
 will start. Then you can use the macros provided to display information,
-warning, error and check some signals status and values. Each error found with
-macros increments an error counter which determine a testsuite status. If the
-error counter is bigger than `0`, the test is considered as failed.
+warning, error and check some signals values. Each error encountered by a
+macro increments a globla error counter which determine a testsuite status.
+If the error counter is bigger than `0`, the test is considered as failed.
 
-A testsuite, comprising several `UNIT_TEST` is declared with another define:
+A testsuite, comprising several `UNIT_TEST`, is declared with another define:
 
 ```verilog
 `TEST_SUITE("SUITENAME")
