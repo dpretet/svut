@@ -74,6 +74,13 @@
     svut_critical += 1;\
     end
 
+/// This macro will not increment the error counter while displaying a failure
+/// message.
+`define FAILURE(msg) \
+    begin\
+    $display("\033[1;31mFAILURE: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
+    end
+
 `define ERROR(msg)\
     begin\
     $display("\033[1;31mERROR: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
@@ -187,11 +194,11 @@ endfunction
         teardown(); \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-            svut_msg = {"Test ", testnum, " pass"}; \
+            svut_msg = {"<< ", "Test ", testnum, ": ", svut_test_name, " >>", " pass"}; \
             `SUCCESS(svut_msg); \
         end else begin \
-            svut_msg = {"Test ", testnum, " fail"}; \
-            `ERROR(svut_msg); \
+            svut_msg = {"<< ", "Test ", testnum, ": ", svut_test_name, " >>", " fail"}; \
+            `FAILURE(svut_msg); \
             svut_fail_list = {svut_fail_list, " '", svut_test_name, "'"}; \
             svut_error_total += svut_error; \
         end \
