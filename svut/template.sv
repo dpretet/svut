@@ -44,6 +44,7 @@ ${module_inst}
     //    - `SUCCESS("message"):   Print a green message if SUCCESS: prefix
     //    - `WARNING("message"):   Print an orange message with WARNING: prefix and increment warning counter
     //    - `CRITICAL("message"):  Print a purple message with CRITICAL: prefix and increment critical counter
+    //    - `FAILURE("message"):   Print a red message with FAILURE: prefix and do **not** increment error counter
     //    - `ERROR("message"):     Print a red message with ERROR: prefix and increment error counter
     //
     //    - `FAIL_IF(aSignal):                 Increment error counter if evaluaton is true

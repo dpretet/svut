@@ -20,7 +20,7 @@ test_run_ko_testsuite() { #@test
 test_run_ko_testsuite_error_count() { #@test
 
     run exe_ko_to_log
-    error_num=10
+    error_num=8
     [ $(grep -c "ERROR:" log) -eq "$error_num" ]
 }
 
