@@ -23,7 +23,7 @@ Hope it can help you!
 
 #### Pypi
 
-SVUT is available on Pypi and can be installed as following:
+SVUT is available on [Pypi](https://pypi.org/project/svut/) and can be installed as following:
 
 ```bash
 pip3 install svut
