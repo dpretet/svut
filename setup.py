@@ -11,7 +11,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="svut",
-    version="1.9.3",
+    version="1.10.0",
     description="SystemVerilog Unit Test (SVUT)",
     long_description=long_description,
     long_description_content_type="text/markdown",
