@@ -95,6 +95,7 @@ svutRun proposes several arguments, most optional:
 - `-no-splash`: don't print SVUT splash banner, printed by default
 - `-compile-only`: just compile the testbench, don't execute it
 - `-run-only`: just execute the testbench, if no executable found, also build it
+- `-fst`: dump waveform with FST format. If not specified use VCD format
 
 All these arguments are common for both the simulators.
 
