@@ -16,7 +16,11 @@ ${module_inst}
 
     // To dump data for visualization:
     // initial begin
+    //     Default wavefile name with VCD format
     //     $$dumpfile("${name}_testbench.vcd");
+    //     Or use FST format with -fst argument
+    //     $$dumpfile("${name}_testbench.fst");
+    //     Dump all the signals of the design
     //     $$dumpvars(0, ${name}_testbench);
     // end
 

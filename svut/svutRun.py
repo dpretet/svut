@@ -196,6 +196,8 @@ def create_iverilog(args, test):
 
     cmds = []
 
+    testname = os.path.basename(test).split(".")[0]
+
     if not os.path.isfile("svut.out"):
         print_event("Testbench executable not found. Will build it")
         args.run_only = False
@@ -234,6 +236,10 @@ def create_iverilog(args, test):
             cmd += args.vpi + " "
 
         cmd += "svut.out "
+
+        if args.fst:
+            cmd += "-fst "
+
         cmds.append(cmd)
 
     return cmds
@@ -256,12 +262,17 @@ def create_verilator(args, test):
     # Build testbench executable
     if not args.run_only:
 
-        cmd = """verilator -Wall --trace --Mdir build +1800-2012ext+sv """
+        cmd = """verilator -Wall --Mdir build +1800-2012ext+sv """
         cmd += """+1800-2005ext+v -Wno-STMTDLY -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY """
         cmd += """-Wpedantic -Wno-VARHIDDEN -Wno-lint """
 
         if args.define:
             cmd += get_defines(args.define)
+
+        if args.fst:
+            cmd += "--trace-fst "
+        else:
+            cmd += "--trace "
 
         if args.dotfile:
 
@@ -373,6 +384,9 @@ def main():
     parser.add_argument('-vpi', dest='vpi', type=str, default="",
                         help='''A string of arguments passed as is to Icarus (only), separated \
                                 by a space ex: -vpi "-M. -mMyVPI"''')
+
+    parser.add_argument('-fst', dest='fst', default=False, action='store_true',
+                        help="Choose FST format for waveform. If not used, select VCD")
 
     # SVUT Execution options
 

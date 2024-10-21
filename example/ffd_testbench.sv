@@ -43,14 +43,13 @@ module ffd_testbench();
     .q     (q)
     );
 
-
     // An example to create a clock for icarus:
     initial aclk = 0;
     always #2 aclk <= ~aclk;
 
     // An example to dump data for visualization
     initial begin
-        $dumpfile("waveform.vcd");
+        $dumpfile("ffd_testbench.vcd");
         $dumpvars(0, ffd_testbench);
     end
 

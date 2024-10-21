@@ -105,11 +105,13 @@
 example/svut_h.sv
 example/*.out
 example/*.vcd
+example/*.fst
 example/build/
 example/log
 test/svut_h.sv
 test/*.out
 test/*.vcd
+test/*.fst
 test/build/
 test/log
 debug
