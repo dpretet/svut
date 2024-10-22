@@ -114,13 +114,13 @@ def parse_verilog(verilog):
             if line[0:5] == "input" or line[0:6] == "output":
                 _line = line.split("//")[0].strip()
                 if line[0:10] == "input var ":
-                    _line = re.sub("input var", "", _line)
+                    _line = re.sub("input var", " ", _line)
                 else:
-                    _line = re.sub("input", "", _line)
-                _line = re.sub("output", "", _line)
-                _line = re.sub("signed", "logic", _line)
-                _line = re.sub("wire", "logic", _line)
-                _line = re.sub("\sreg\s", "logic", _line)
+                    _line = re.sub("input", " ", _line)
+                _line = re.sub("output", " ", _line)
+                _line = re.sub("signed", "logic ", _line)
+                _line = re.sub("wire", "logic ", _line)
+                _line = re.sub(r"\sreg\s", "logic ", _line)
                 _line = re.sub(",", "", _line)
                 _line = _line + ";"
                 instance["io"].append(_line.strip())
@@ -291,12 +291,12 @@ def main():
     tmpl_data = dict(name=verilog_info["name"], module_inst=module_inst)
 
     # Load the system verilog template and substitute
-    tmpl = Path(SCRIPTDIR+"/template.sv", encoding="utf-8").read_text()
+    tmpl = Path(SCRIPTDIR+"/template.sv").read_text()
     tmpl = Template(tmpl).substitute(tmpl_data)
     dump_template(verilog_info["name"] + "_testbench.sv", tmpl)
 
     # Load the cpp template and substitute
-    tmpl = Path(SCRIPTDIR+"/template.cpp", encoding="utf-8").read_text()
+    tmpl = Path(SCRIPTDIR+"/template.cpp").read_text()
     tmpl = Template(tmpl).substitute(tmpl_data)
     dump_template("sim_main.cpp", tmpl)
 
